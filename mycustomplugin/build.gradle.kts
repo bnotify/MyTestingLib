@@ -35,6 +35,6 @@ publishing {
 
 
 
-//    ./gradlew :mycustomlib:publish
+//./gradlew :mycustomlib:publish
 //./gradlew :mycustomplugin:publish
 //https://github.com/hamzahafeez93/MyTestingLib
