@@ -12,7 +12,7 @@ dependencies {
 gradlePlugin {
     plugins {
         create("mycustomplugin") {
-            id = "com.example.mycustomplugin"
+            id = "com.github.hamzahafeez93.mycustomplugin"
             implementationClass = "com.example.MainGradlePlugin"
         }
     }
@@ -21,8 +21,8 @@ gradlePlugin {
 publishing {
     publications {
         create<MavenPublication>("pluginMaven") {
-            groupId = "com.example"
-            artifactId = "mycustomplugin"
+            groupId = "com.github.hamzahafeez93"
+            artifactId = "MyTestingLib-mycustomplugin"
             version = "1.0.0"
         }
     }
@@ -32,3 +32,9 @@ publishing {
         }
     }
 }
+
+
+
+//    ./gradlew :mycustomlib:publish
+//./gradlew :mycustomplugin:publish
+//https://github.com/hamzahafeez93/MyTestingLib
