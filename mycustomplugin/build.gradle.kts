@@ -18,20 +18,13 @@ gradlePlugin {
     }
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("pluginMaven") {
-            groupId = "com.github.hamzahafeez93"
-            artifactId = "MyTestingLib-mycustomplugin"
-            version = "1.0.0"
-        }
-    }
-    repositories {
-        maven {
-            url = uri("$rootDir/build/repo")
-        }
-    }
-}
+//    }
+//    repositories {
+//        maven {
+//            url = uri("$rootDir/build/repo")
+//        }
+//    }
+//}
 
 
 
