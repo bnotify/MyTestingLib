@@ -20,7 +20,7 @@ publishing {
         create<MavenPublication>("release") {
             groupId = "com.example"
             artifactId = "mycustomlib"
-            version = "1.0.0"
+            version = "1.0.3"
 
             afterEvaluate {
                 from(components["release"])
