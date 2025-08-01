@@ -12,29 +12,35 @@ dependencies {
 gradlePlugin {
     plugins {
         create("mycustomplugin") {
-            id = "com.github.hamzahafeez93.mycustomplugin"
-            implementationClass = "com.example.MainGradlePlugin"
+            id = "com.example.mycustomplugin"
+            implementationClass = "com.example.mycustomplugin.MainGradlePlugin"
         }
     }
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("pluginMaven") {
-            groupId = "com.github.hamzahafeez93"
-            artifactId = "MyTestingLib-mycustomplugin"
-            version = "1.0.0"
-        }
-    }
-    repositories {
-        maven {
-            url = uri("$rootDir/build/repo")
-        }
-    }
-}
+//publishing {
+//    publications {
+//        create<MavenPublication>("pluginMaven") {
+//            groupId = "com.github.hamzahafeez93"
+//            artifactId = "MyTestingLib-mycustomplugin"
+//            version = "1.0.0"
+//        }
+//    }
+//    repositories {
+//        maven {
+//            url = uri("$rootDir/build/repo")
+//        }
+//    }
+//}
 
 
 
 //./gradlew :mycustomlib:publish
 //./gradlew :mycustomplugin:publish
 //https://github.com/hamzahafeez93/MyTestingLib
+
+sourceSets["main"].java.srcDirs("src/main/kotlin")
+
+
+group = "com.example"
+version = "1.0.2"
