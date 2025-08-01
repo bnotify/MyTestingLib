@@ -4,6 +4,9 @@ plugins {
     `maven-publish`
 }
 
+group = "com.example"
+version = "1.0.2"
+
 dependencies {
 //    implementation(project(":mycustomlib"))
 //    implementation("com.example:mycustomlib:1.0.0")
@@ -41,6 +44,6 @@ gradlePlugin {
 
 sourceSets["main"].java.srcDirs("src/main/kotlin")
 
-
-group = "com.example"
-version = "1.0.2"
+tasks.withType<ProcessResources> {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
