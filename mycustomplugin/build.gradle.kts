@@ -4,39 +4,33 @@ plugins {
     `maven-publish`
 }
 
-group = "com.example"
-version = "1.0.2"
-
 dependencies {
-//    implementation(project(":mycustomlib"))
-//    implementation("com.example:mycustomlib:1.0.0")
+    implementation("com.android.tools.build:gradle:8.4.0")
 }
 
 gradlePlugin {
     plugins {
         create("mycustomplugin") {
-            id = "com.example.mycustomplugin"
+            id = "com.github.bnotify.mycustomplugin"
             implementationClass = "com.example.mycustomplugin.MainGradlePlugin"
         }
     }
 }
 
-//publishing {
-//    publications {
-//        create<MavenPublication>("pluginMaven") {
-//            groupId = "com.github.hamzahafeez93"
-//            artifactId = "MyTestingLib-mycustomplugin"
-//            version = "1.0.0"
-//        }
-//    }
-//    repositories {
-//        maven {
-//            url = uri("$rootDir/build/repo")
-//        }
-//    }
-//}
-
-
+publishing {
+    publications {
+        create<MavenPublication>("pluginMaven") {
+            groupId = "com.github.bnotify"
+            artifactId = "mycustomplugin"
+            version = "1.0.0"
+        }
+    }
+    repositories {
+        maven {
+            url = uri("$rootDir/build/repo")
+        }
+    }
+}
 
 //./gradlew :mycustomlib:publish
 //./gradlew :mycustomplugin:publish

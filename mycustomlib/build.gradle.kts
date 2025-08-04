@@ -13,14 +13,25 @@ android {
         minSdk = 24
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    // Add these compile options
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    // Add these Kotlin compiler options
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 publishing {
     publications {
         create<MavenPublication>("release") {
-            groupId = "com.example"
+            groupId = "com.github.bnotify"
             artifactId = "mycustomlib"
-            version = "1.0.3"
+            version = "1.0.0"
 
             afterEvaluate {
                 from(components["release"])
