@@ -3,7 +3,7 @@
   "component": {
     "group": "com.github.bnotify",
     "module": "mycustomplugin",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "attributes": {
       "org.gradle.status": "release"
     }
@@ -27,13 +27,13 @@
       },
       "files": [
         {
-          "name": "mycustomplugin-1.0.5.jar",
-          "url": "mycustomplugin-1.0.5.jar",
-          "size": 5750,
-          "sha512": "ec932deee50f1b25ae3308afb8124989a61d1cbf6e66d7956659549e04f7e56f981c399022f3a7fe0a9ba7d95799936bcc3c80bf85b6d1d1267eabb98c7e3db0",
-          "sha256": "55475d4638506d13534d666968ef499c7f2f71d299d91870bb332f9deed1702f",
-          "sha1": "a7b8efaac49580975ec7d62222d19159e467d6d5",
-          "md5": "fb41257a85b71659731ae1698b217fe0"
+          "name": "mycustomplugin-1.0.6.jar",
+          "url": "mycustomplugin-1.0.6.jar",
+          "size": 13924,
+          "sha512": "1161b76a172726cbf743a4f8b774c4d240c75f7144c4a142239af50f33e8151f4d0676e1297a064d216700bdb7e693372bce0042e9eb63f5d1730eb017cda124",
+          "sha256": "c6f6e058181788c6ef1da696c62c3040e392bd7f363309fa56aad04f1abc9446",
+          "sha1": "6222d23aa9f6541294cdaf4a364f55df5afce007",
+          "md5": "9019c9bfbbadc41fc85459c7cabc19ed"
         }
       ]
     },
@@ -55,17 +55,24 @@
           "version": {
             "requires": "8.4.0"
           }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-json",
+          "version": {
+            "requires": "1.6.0"
+          }
         }
       ],
       "files": [
         {
-          "name": "mycustomplugin-1.0.5.jar",
-          "url": "mycustomplugin-1.0.5.jar",
-          "size": 5750,
-          "sha512": "ec932deee50f1b25ae3308afb8124989a61d1cbf6e66d7956659549e04f7e56f981c399022f3a7fe0a9ba7d95799936bcc3c80bf85b6d1d1267eabb98c7e3db0",
-          "sha256": "55475d4638506d13534d666968ef499c7f2f71d299d91870bb332f9deed1702f",
-          "sha1": "a7b8efaac49580975ec7d62222d19159e467d6d5",
-          "md5": "fb41257a85b71659731ae1698b217fe0"
+          "name": "mycustomplugin-1.0.6.jar",
+          "url": "mycustomplugin-1.0.6.jar",
+          "size": 13924,
+          "sha512": "1161b76a172726cbf743a4f8b774c4d240c75f7144c4a142239af50f33e8151f4d0676e1297a064d216700bdb7e693372bce0042e9eb63f5d1730eb017cda124",
+          "sha256": "c6f6e058181788c6ef1da696c62c3040e392bd7f363309fa56aad04f1abc9446",
+          "sha1": "6222d23aa9f6541294cdaf4a364f55df5afce007",
+          "md5": "9019c9bfbbadc41fc85459c7cabc19ed"
         }
       ]
     }

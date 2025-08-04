@@ -3,7 +3,7 @@
   "component": {
     "group": "com.github.bnotify",
     "module": "mycustomlib",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "attributes": {
       "org.gradle.status": "release"
     }
@@ -33,13 +33,13 @@
       ],
       "files": [
         {
-          "name": "mycustomlib-1.0.5.aar",
-          "url": "mycustomlib-1.0.5.aar",
-          "size": 1558,
-          "sha512": "55ce8f2745a4e102ccd1dc24f6711e734869e1fcdb55886974faefa6a5d949586340ee072fcfb58db94f47e2b0f7c46da849e4b2d6d5122d9b31d25007c8abba",
-          "sha256": "4df370d4a8da8f84b365abaf1c1b28c2711b75d3250ba612bb9218676ca1b27d",
-          "sha1": "88ed760ee8908178780f19f55fc62f0fea3f0a74",
-          "md5": "52b2cb569e60a3065f4117aaf39e95aa"
+          "name": "mycustomlib-1.0.6.aar",
+          "url": "mycustomlib-1.0.6.aar",
+          "size": 2438,
+          "sha512": "7f87103f4d136d99a776a43fd26f4ad7c5514228ce093405e0d89fad721c2ca543f9d218d294d2a9a588e5f4a187b1776aeac028bf7d224d594d3a3b754d21b7",
+          "sha256": "dcc410d733a0539b7d5a868a10f34bccff33c3785fb735045080a48acd973718",
+          "sha1": "3e1bce5c57585d4ed008c024afafb2e3c8567720",
+          "md5": "d7ebd95d5444ebe4bfb612e66f46ce37"
         }
       ]
     },
@@ -62,13 +62,13 @@
       ],
       "files": [
         {
-          "name": "mycustomlib-1.0.5.aar",
-          "url": "mycustomlib-1.0.5.aar",
-          "size": 1558,
-          "sha512": "55ce8f2745a4e102ccd1dc24f6711e734869e1fcdb55886974faefa6a5d949586340ee072fcfb58db94f47e2b0f7c46da849e4b2d6d5122d9b31d25007c8abba",
-          "sha256": "4df370d4a8da8f84b365abaf1c1b28c2711b75d3250ba612bb9218676ca1b27d",
-          "sha1": "88ed760ee8908178780f19f55fc62f0fea3f0a74",
-          "md5": "52b2cb569e60a3065f4117aaf39e95aa"
+          "name": "mycustomlib-1.0.6.aar",
+          "url": "mycustomlib-1.0.6.aar",
+          "size": 2438,
+          "sha512": "7f87103f4d136d99a776a43fd26f4ad7c5514228ce093405e0d89fad721c2ca543f9d218d294d2a9a588e5f4a187b1776aeac028bf7d224d594d3a3b754d21b7",
+          "sha256": "dcc410d733a0539b7d5a868a10f34bccff33c3785fb735045080a48acd973718",
+          "sha1": "3e1bce5c57585d4ed008c024afafb2e3c8567720",
+          "md5": "d7ebd95d5444ebe4bfb612e66f46ce37"
         }
       ]
     },
@@ -85,13 +85,13 @@
       },
       "files": [
         {
-          "name": "mycustomlib-1.0.5-sources.jar",
-          "url": "mycustomlib-1.0.5-sources.jar",
-          "size": 1341,
-          "sha512": "82786ded6c93dff1b87c541850fb5320d1dfb445f450a0c73efc53ab9e9b9e7aef3ae03e42e58522f3eae21bd511a33d78d51e48a886b49e462d0531b1956122",
-          "sha256": "1cee83de169877c2272eec09ebe928a1a2f97844a6f0fbb98107be3c7221d379",
-          "sha1": "321fa21c921febf5421f2518aafb503c07168aa5",
-          "md5": "9edc7505ea21390343c6ced14ea519fd"
+          "name": "mycustomlib-1.0.6-sources.jar",
+          "url": "mycustomlib-1.0.6-sources.jar",
+          "size": 2361,
+          "sha512": "067fdbe14f953eb72591cf2cf6e8b9cb016602d7125d94572c11da57d5b91a18f9ab38fad3642e61620db492fb943d3cf941b3f2e9270d21fffa8771450d9b65",
+          "sha256": "d3eb67027c6fdd6160596b060dd5c867d102fccb677661fd6619002571f1973c",
+          "sha1": "3dee1d323baf520d9b47e1cb6df635b0d914e157",
+          "md5": "542b2f631a53b387c2134581ceba07da"
         }
       ]
     }

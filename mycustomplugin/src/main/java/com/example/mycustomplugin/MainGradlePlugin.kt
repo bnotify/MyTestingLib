@@ -1,5 +1,6 @@
 package com.example.mycustomplugin
 
+import kotlinx.serialization.json.Json
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
@@ -38,20 +39,36 @@ class MainGradlePlugin: Plugin<Project>  {
         val jsonContent = jsonFile.readText()
         println("✅ Found ${CONFIG_FILE_NAME}, generating source file...")
 
+        // Parse JSON using Kotlinx Serialization
+        val config = try {
+            Json.decodeFromString<BnotifyConfig>(jsonContent)
+        } catch (e: Exception) {
+            throw RuntimeException("Failed to parse ${CONFIG_FILE_NAME}: ${e.message}")
+        }
+
         val outputDir = File(project.buildDir, "generated/source/config")
         val packageName = "com.example.mycustomlib.config"
         val className = "GeneratedConfig"
 
         val configFile = File(outputDir, "$className.kt")
-        configFile.parentFile.mkdirs()
+
         configFile.writeText(
             """
-            package $packageName
+        package $packageName
 
-            object $className {
-                const val JSON = ${jsonContent.trim().quoteForKotlin()}
-            }
-            """.trimIndent()
+        internal object $className {
+            const val JSON = ${jsonContent.trim().quoteForKotlin()}
+            const val projectId = "${config.projectId}"
+            const val packageName = "${config.packageName}"
+            const val apiKey = "${config.apiKey}"
+            const val authDomain = "${config.authDomain}"
+            const val databaseURL = "${config.databaseURL}"
+            const val storageBucket = "${config.storageBucket}"
+            const val messagingSenderId = "${config.messagingSenderId}"
+            const val appId = "${config.appId}"
+            const val measurementId = "${config.measurementId}"
+        }
+        """.trimIndent()
         )
 
         // Tell Gradle to include this source directory in the compilation
@@ -66,4 +83,5 @@ class MainGradlePlugin: Plugin<Project>  {
         // Escape string for Kotlin string literal
         return "\"${this.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n")}\""
     }
+
 }

@@ -2,10 +2,12 @@ plugins {
     `kotlin-dsl` // Required for custom Gradle plugins
     `java-gradle-plugin`
     `maven-publish`
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.21"
 }
 
 dependencies {
     implementation("com.android.tools.build:gradle:8.4.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 }
 
 gradlePlugin {
@@ -22,7 +24,7 @@ publishing {
         create<MavenPublication>("pluginMaven") {
             groupId = "com.github.bnotify"
             artifactId = "mycustomplugin"
-            version = "1.0.5"
+            version = "1.0.6"
         }
     }
     repositories {
