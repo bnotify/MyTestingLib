@@ -3,7 +3,7 @@
   "component": {
     "group": "com.github.bnotify",
     "module": "mycustomlib",
-    "version": "1.0.0",
+    "version": "1.0.5",
     "attributes": {
       "org.gradle.status": "release"
     }
@@ -33,8 +33,8 @@
       ],
       "files": [
         {
-          "name": "mycustomlib-1.0.0.aar",
-          "url": "mycustomlib-1.0.0.aar",
+          "name": "mycustomlib-1.0.5.aar",
+          "url": "mycustomlib-1.0.5.aar",
           "size": 1558,
           "sha512": "55ce8f2745a4e102ccd1dc24f6711e734869e1fcdb55886974faefa6a5d949586340ee072fcfb58db94f47e2b0f7c46da849e4b2d6d5122d9b31d25007c8abba",
           "sha256": "4df370d4a8da8f84b365abaf1c1b28c2711b75d3250ba612bb9218676ca1b27d",
@@ -62,8 +62,8 @@
       ],
       "files": [
         {
-          "name": "mycustomlib-1.0.0.aar",
-          "url": "mycustomlib-1.0.0.aar",
+          "name": "mycustomlib-1.0.5.aar",
+          "url": "mycustomlib-1.0.5.aar",
           "size": 1558,
           "sha512": "55ce8f2745a4e102ccd1dc24f6711e734869e1fcdb55886974faefa6a5d949586340ee072fcfb58db94f47e2b0f7c46da849e4b2d6d5122d9b31d25007c8abba",
           "sha256": "4df370d4a8da8f84b365abaf1c1b28c2711b75d3250ba612bb9218676ca1b27d",
@@ -85,8 +85,8 @@
       },
       "files": [
         {
-          "name": "mycustomlib-1.0.0-sources.jar",
-          "url": "mycustomlib-1.0.0-sources.jar",
+          "name": "mycustomlib-1.0.5-sources.jar",
+          "url": "mycustomlib-1.0.5-sources.jar",
           "size": 1341,
           "sha512": "82786ded6c93dff1b87c541850fb5320d1dfb445f450a0c73efc53ab9e9b9e7aef3ae03e42e58522f3eae21bd511a33d78d51e48a886b49e462d0531b1956122",
           "sha256": "1cee83de169877c2272eec09ebe928a1a2f97844a6f0fbb98107be3c7221d379",

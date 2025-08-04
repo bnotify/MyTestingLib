@@ -9,7 +9,7 @@
     <dependency>
       <groupId>com.github.bnotify</groupId>
       <artifactId>mycustomplugin</artifactId>
-      <version>1.0.0</version>
+      <version>1.0.5</version>
     </dependency>
   </dependencies>
 </project>
