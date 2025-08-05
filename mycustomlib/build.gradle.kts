@@ -2,15 +2,24 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     id("maven-publish")
-//    id("com.example.mycustomplugin")
 }
 
 android {
     namespace = "com.example.mycustomlib"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlin {
+        jvmToolchain(17)
     }
 
     sourceSets {
@@ -20,25 +29,30 @@ android {
     }
 }
 
-//publishing {
-//    publications {
-//        create<MavenPublication>("release") {
-//            groupId = "com.github.bnotify"
-//            artifactId = "mycustomlib"
-//            version = "1.0.7"
-//
-//            afterEvaluate {
-//                from(components["release"])
-//            }
-//        }
-//    }
-//    repositories {
-//        maven {
-//            url = uri("$rootDir/build/repo")
-//        }
-//    }
-//}
+publishing {
+    publications {
+        create<MavenPublication>("release") {
+            groupId = "com.github.bnotify"
+            artifactId = "mycustomlib"
+            version = "1.1.0"
+
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
+    repositories {
+        maven {
+            url = uri("$rootDir/build/repo")
+        }
+    }
+}
 
 dependencies {
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }

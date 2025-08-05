@@ -30,10 +30,10 @@ dependencies {
 gradlePlugin {
     plugins {
         create("mycustomplugin") {
-//            id = "com.github.bnotify.mycustomplugin"
-            id = "com.example.mycustomplugin" // Match your package
+            id = "com.github.bnotify.mycustomplugin"
+//            id = "com.example.mycustomplugin" // Match your package
             implementationClass = "com.example.mycustomplugin.MainGradlePlugin"
-            version = "1.0.7" // Add version here
+            version = "1.1.0" // Add version here
         }
     }
 }
@@ -43,7 +43,7 @@ publishing {
         create<MavenPublication>("pluginMaven") {
             groupId = "com.github.bnotify"
             artifactId = "mycustomplugin"
-            version = "1.0.7"
+            version = "1.1.0"
 
             artifact(tasks.register("pluginMarker", Jar::class) {
                 archiveClassifier.set("plugin-marker")
@@ -58,18 +58,19 @@ publishing {
 }
 
 // Configure Java compatibility
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
+//java {
+//    sourceCompatibility = JavaVersion.VERSION_17
+//    targetCompatibility = JavaVersion.VERSION_17
+//}
+//
+//tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+//    compilerOptions {
+//        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+//    }
+//}
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    compilerOptions {
-        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
-    }
-}
+sourceSets["main"].java.srcDirs("src/main/kotlin")
 
 tasks.withType<ProcessResources> {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
-//sourceSets["main"].java.srcDirs("src/main/kotlin")

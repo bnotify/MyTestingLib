@@ -27,6 +27,6 @@ rootProject.name = "MyTestingLib"
 include(":app")
 include(":mycustomlib")
 include(":mycustomplugin")
-includeBuild("mycustomplugin") {
-    name = "mycustomplugin-build" // Unique name
-}
+//includeBuild("mycustomplugin") {
+//    name = "mycustomplugin-build" // Unique name
+//}
