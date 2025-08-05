@@ -7,5 +7,6 @@ class Bnotify {
     fun init() {
         println("BNotify_ClassLoader: ${GeneratedConfig::class.java.classLoader}")
         println("BNotify_All values: ${GeneratedConfig.JSON}") // Check raw JSON
+        Log.i("BNotify","projectId: ${GeneratedConfig.projectId} packageName: ${GeneratedConfig.packageName} apiKey: ${GeneratedConfig.apiKey} authDomain: ${GeneratedConfig.authDomain} databaseURL: ${GeneratedConfig.databaseURL} storageBucket: ${GeneratedConfig.storageBucket} messagingSenderId: ${GeneratedConfig.messagingSenderId} appId: ${GeneratedConfig.appId} measurementId: ${GeneratedConfig.measurementId}")
     }
 }

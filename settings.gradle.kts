@@ -1,6 +1,5 @@
 pluginManagement {
     repositories {
-        maven { url = uri("$rootDir/build/repo") }
         google {
             content {
                 includeGroupByRegex("com\\.android.*")
@@ -10,14 +9,17 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        maven { url = uri("$rootDir/build/repo") }
     }
 }
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+//    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
     repositories {
-        maven { url = uri("$rootDir/build/repo") }
         google()
         mavenCentral()
+        gradlePluginPortal()
+        maven { url = uri("$rootDir/build/repo") }
     }
 }
 
@@ -25,3 +27,6 @@ rootProject.name = "MyTestingLib"
 include(":app")
 include(":mycustomlib")
 include(":mycustomplugin")
+includeBuild("mycustomplugin") {
+    name = "mycustomplugin-build" // Unique name
+}

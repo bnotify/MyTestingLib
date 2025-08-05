@@ -29,11 +29,11 @@
         {
           "name": "mycustomplugin-1.0.7.jar",
           "url": "mycustomplugin-1.0.7.jar",
-          "size": 19067,
-          "sha512": "a3acad6eb0b81ffe0764dbf7f84df1c3bcd987bf0f7b05951160677083c3661d0c94551ff1ab36237b4e9c0e3e501f999f18ff14ad792de8ee015a758a331e75",
-          "sha256": "f8d92532904d67800811896ade09f35f1085891a115b2c550222df32c6512692",
-          "sha1": "4c0e23335f88849a912c31d7c597c09bd7d7b9b9",
-          "md5": "186027463fe8591a15213b67a155e798"
+          "size": 24086,
+          "sha512": "0904fd20441f52952891280bb93b4d4b3c6926d6bfc11feafce84f6e7a18ff70889c84b0b141513084f865886ce0c6f5fe49ba09d1d48bd30e2b785ed547fac5",
+          "sha256": "722c14aef50124afe85e3d7252a34ca750e46a2d966bf3658a02a62c66c124a4",
+          "sha1": "9c843d632ef3d017c80aca1d292cc16353566bbc",
+          "md5": "3d543e3e499d24d356aa91a22de7c6de"
         }
       ]
     },
@@ -50,11 +50,8 @@
       },
       "dependencies": [
         {
-          "group": "com.android.tools.build",
-          "module": "gradle",
-          "version": {
-            "requires": "8.4.0"
-          }
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib"
         },
         {
           "group": "org.jetbrains.kotlinx",
@@ -62,17 +59,33 @@
           "version": {
             "requires": "1.6.0"
           }
+        },
+        {
+          "group": "com.android.tools.build",
+          "module": "gradle",
+          "version": {
+            "requires": "8.11.1"
+          }
+        }
+      ],
+      "dependencyConstraints": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.0.21"
+          }
         }
       ],
       "files": [
         {
           "name": "mycustomplugin-1.0.7.jar",
           "url": "mycustomplugin-1.0.7.jar",
-          "size": 19067,
-          "sha512": "a3acad6eb0b81ffe0764dbf7f84df1c3bcd987bf0f7b05951160677083c3661d0c94551ff1ab36237b4e9c0e3e501f999f18ff14ad792de8ee015a758a331e75",
-          "sha256": "f8d92532904d67800811896ade09f35f1085891a115b2c550222df32c6512692",
-          "sha1": "4c0e23335f88849a912c31d7c597c09bd7d7b9b9",
-          "md5": "186027463fe8591a15213b67a155e798"
+          "size": 24086,
+          "sha512": "0904fd20441f52952891280bb93b4d4b3c6926d6bfc11feafce84f6e7a18ff70889c84b0b141513084f865886ce0c6f5fe49ba09d1d48bd30e2b785ed547fac5",
+          "sha256": "722c14aef50124afe85e3d7252a34ca750e46a2d966bf3658a02a62c66c124a4",
+          "sha1": "9c843d632ef3d017c80aca1d292cc16353566bbc",
+          "md5": "3d543e3e499d24d356aa91a22de7c6de"
         }
       ]
     }

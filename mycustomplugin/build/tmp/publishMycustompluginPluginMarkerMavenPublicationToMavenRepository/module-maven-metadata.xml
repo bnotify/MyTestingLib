@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-  <groupId>com.github.bnotify.mycustomplugin</groupId>
-  <artifactId>com.github.bnotify.mycustomplugin.gradle.plugin</artifactId>
+  <groupId>com.example.mycustomplugin</groupId>
+  <artifactId>com.example.mycustomplugin.gradle.plugin</artifactId>
   <versioning>
-    <latest>unspecified</latest>
-    <release>unspecified</release>
+    <latest>1.0.7</latest>
+    <release>1.0.7</release>
     <versions>
-      <version>unspecified</version>
+      <version>1.0.7</version>
     </versions>
-    <lastUpdated>20250805114446</lastUpdated>
+    <lastUpdated>20250805152641</lastUpdated>
   </versioning>
 </metadata>
