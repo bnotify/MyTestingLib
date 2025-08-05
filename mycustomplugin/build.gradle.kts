@@ -24,7 +24,7 @@ publishing {
         create<MavenPublication>("pluginMaven") {
             groupId = "com.github.bnotify"
             artifactId = "mycustomplugin"
-            version = "1.0.6"
+            version = "1.0.7"
         }
     }
     repositories {
