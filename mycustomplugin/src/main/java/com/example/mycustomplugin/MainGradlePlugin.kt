@@ -12,7 +12,6 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 import java.io.File
 
-// JSON data class
 @Serializable
 data class BnotifyConfig(
     val projectId: String,
@@ -37,27 +36,32 @@ class MainGradlePlugin : Plugin<Project> {
         }
     }
 
-    private fun configureForApplication(project: Project) {
-        val generateTask = project.tasks.register("generateBnotifyXml", GenerateBnotifyConfigTask::class.java) {
-            group = "build"
-            description = "Generates bnotify_config.xml from JSON"
-
-            val jsonFile = File("${project.rootDir}/app/${CONFIG_FILE_NAME}")
-            if (!jsonFile.exists()) {
-                throw GradleException("${CONFIG_FILE_NAME} not found in app directory!")
-            }
-            configPath.set(jsonFile)
-
-            // Directly point to library module's res folder
-            val libResDir = File(project.rootDir, "mycustomlib/src/main/res")
-            outputDir.set(libResDir)
-
-            packageName.set("com.example.mycustomlib")
+    private fun configureForApplication(appProject: Project) {
+        val jsonFile = File("${appProject.rootDir}/app/${CONFIG_FILE_NAME}")
+        if (!jsonFile.exists()) {
+            throw GradleException("${CONFIG_FILE_NAME} not found in app directory!")
         }
 
-        project.afterEvaluate {
-            // Ensure we run before resources are merged
-            project.tasks.matching { it.name.startsWith("merge") && it.name.endsWith("Resources") }
+        // Find the library module that contains your runtime code
+        val libProject = appProject.rootProject.subprojects.find { sub ->
+            sub.plugins.hasPlugin("com.android.library") &&
+                    File(sub.projectDir, "src/main/res").exists()
+        } ?: throw GradleException("Could not find library module with res folder!")
+
+        val generateTask = appProject.tasks.register(
+            "generateBnotifyXml",
+            GenerateBnotifyConfigTask::class.java
+        ) {
+            group = "build"
+            description = "Generates bnotify_config.xml from JSON"
+            configPath.set(jsonFile)
+            outputDir.set(File(libProject.projectDir, "src/main/res"))
+            packageName.set("com.example.mycustomlib") // unused for XML but kept
+        }
+
+        // Ensure generation happens before the LIBRARY's mergeResources
+        libProject.afterEvaluate {
+            libProject.tasks.matching { it.name.startsWith("merge") && it.name.endsWith("Resources") }
                 .configureEach { dependsOn(generateTask) }
         }
     }
@@ -99,18 +103,18 @@ abstract class GenerateBnotifyConfigTask : DefaultTask() {
 
     private fun buildXml(config: BnotifyConfig): String {
         return """
-        <?xml version="1.0" encoding="utf-8"?>
-        <bnotifyConfig>
-            <projectId>${config.projectId}</projectId>
-            <packageName>${config.packageName}</packageName>
-            <apiKey>${config.apiKey}</apiKey>
-            ${config.authDomain?.let { "<authDomain>$it</authDomain>" } ?: ""}
-            ${config.databaseURL?.let { "<databaseURL>$it</databaseURL>" } ?: ""}
-            ${config.storageBucket?.let { "<storageBucket>$it</storageBucket>" } ?: ""}
-            ${config.messagingSenderId?.let { "<messagingSenderId>$it</messagingSenderId>" } ?: ""}
-            <appId>${config.appId}</appId>
-            ${config.measurementId?.let { "<measurementId>$it</measurementId>" } ?: ""}
-        </bnotifyConfig>
-    """.trimIndent()
+            <?xml version="1.0" encoding="utf-8"?>
+            <bnotifyConfig>
+                <projectId>${config.projectId}</projectId>
+                <packageName>${config.packageName}</packageName>
+                <apiKey>${config.apiKey}</apiKey>
+                ${config.authDomain?.let { "<authDomain>$it</authDomain>" } ?: ""}
+                ${config.databaseURL?.let { "<databaseURL>$it</databaseURL>" } ?: ""}
+                ${config.storageBucket?.let { "<storageBucket>$it</storageBucket>" } ?: ""}
+                ${config.messagingSenderId?.let { "<messagingSenderId>$it</messagingSenderId>" } ?: ""}
+                <appId>${config.appId}</appId>
+                ${config.measurementId?.let { "<measurementId>$it</measurementId>" } ?: ""}
+            </bnotifyConfig>
+        """.trimIndent()
     }
 }

@@ -34,7 +34,7 @@ publishing {
         create<MavenPublication>("release") {
             groupId = "com.github.bnotify"
             artifactId = "mycustomlib"
-            version = "1.1.3"
+            version = "1.1.4"
 
             afterEvaluate {
                 from(components["release"])
