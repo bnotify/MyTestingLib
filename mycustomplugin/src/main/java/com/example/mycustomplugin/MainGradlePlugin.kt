@@ -33,7 +33,11 @@ class MainGradlePlugin : Plugin<Project> {
             group = "build"
             description = "Generates Bnotify configuration from JSON"
 
-            configPath.set(project.rootProject.file("app/$CONFIG_FILE_NAME"))
+            val jsonFile = File("${project.rootDir}/app/${CONFIG_FILE_NAME}")
+            if (!jsonFile.exists()) {
+                throw RuntimeException("${CONFIG_FILE_NAME} not found in app directory!")
+            }
+            configPath.set(jsonFile)
             outputDir.set(project.layout.buildDirectory.dir("generated/source/bnotify"))
             packageName.set("com.example.mycustomlib.config")
 
@@ -70,7 +74,10 @@ abstract class GenerateBnotifyConfigTask : DefaultTask() {
     @TaskAction
     fun generate() {
         val jsonFile = configPath.get().asFile
+        println("✅ Found ${jsonFile}, generating source file...")
         val jsonContent = jsonFile.readText()
+
+        println("✅ Extracted JSON ${jsonContent}")
 
         // Parse the JSON content into BnotifyConfig object
         val config = try {
@@ -85,24 +92,25 @@ abstract class GenerateBnotifyConfigTask : DefaultTask() {
         File(outputDirFile, "$packageDir/GeneratedConfig.kt").apply {
             parentFile.mkdirs()
             writeText("""
-            |package ${packageName.get()}
-            |
-            |internal object GeneratedConfig {
-            |    // Raw JSON content
-            |    const val JSON = ${jsonContent.trimIndent().quoteForKotlin()}
-            |
-            |    // Parsed fields
-            |    const val projectId: String = "${config.projectId}"
-            |    const val packageName: String = "${config.packageName}"
-            |    const val apiKey: String = "${config.apiKey}"
-            |    ${config.authDomain?.let { "const val authDomain: String = \"$it\"" } ?: "const val authDomain: String? = null"}
-            |    ${config.databaseURL?.let { "const val databaseURL: String = \"$it\"" } ?: "const val databaseURL: String? = null"}
-            |    ${config.storageBucket?.let { "const val storageBucket: String = \"$it\"" } ?: "const val storageBucket: String? = null"}
-            |    ${config.messagingSenderId?.let { "const val messagingSenderId: String = \"$it\"" } ?: "const val messagingSenderId: String? = null"}
-            |    const val appId: String = "${config.appId}"
-            |    ${config.measurementId?.let { "const val measurementId: String = \"$it\"" } ?: "const val measurementId: String? = null"}
-            |}
+            package ${packageName.get()}
+            
+            internal object GeneratedConfig {
+                // Raw JSON content
+                const val JSON = ${jsonContent.trimIndent().quoteForKotlin()}
+            
+                // Parsed fields
+                const val projectId: String = "${config.projectId}"
+                const val packageName: String = "${config.packageName}"
+                const val apiKey: String = "${config.apiKey}"
+                ${config.authDomain?.let { "const val authDomain: String = \"${it}\"" } ?: "const val authDomain: String? = null"}
+                ${config.databaseURL?.let { "const val databaseURL: String = \"${it}\"" } ?: "const val databaseURL: String? = null"}
+                ${config.storageBucket?.let { "const val storageBucket: String = \"${it}\"" } ?: "const val storageBucket: String? = null"}
+                ${config.messagingSenderId?.let { "const val messagingSenderId: String = \"${it}\"" } ?: "const val messagingSenderId: String? = null"}
+                const val appId: String = "${config.appId}"
+                ${config.measurementId?.let { "const val measurementId: String = \"${it}\"" } ?: "const val measurementId: String? = null"}
+            }
         """.trimMargin())
+            println("✅ GeneratedConfig.kt is generated successfully")
         }
     }
 
