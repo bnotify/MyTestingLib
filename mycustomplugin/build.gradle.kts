@@ -33,7 +33,7 @@ gradlePlugin {
             id = "com.github.bnotify.mycustomplugin"
 //            id = "com.example.mycustomplugin" // Match your package
             implementationClass = "com.example.mycustomplugin.MainGradlePlugin"
-            version = "1.1.0" // Add version here
+            version = "1.1.2" // Add version here
         }
     }
 }
@@ -43,7 +43,7 @@ publishing {
         create<MavenPublication>("pluginMaven") {
             groupId = "com.github.bnotify"
             artifactId = "mycustomplugin"
-            version = "1.1.0"
+            version = "1.1.2"
 
             artifact(tasks.register("pluginMarker", Jar::class) {
                 archiveClassifier.set("plugin-marker")

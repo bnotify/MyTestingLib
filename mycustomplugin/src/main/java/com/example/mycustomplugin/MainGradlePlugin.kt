@@ -1,19 +1,30 @@
 package com.example.mycustomplugin
 
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.GradleException
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 import java.io.File
+
+// JSON data class
+@Serializable
+data class BnotifyConfig(
+    val projectId: String,
+    val packageName: String,
+    val apiKey: String,
+    val authDomain: String? = null,
+    val databaseURL: String? = null,
+    val storageBucket: String? = null,
+    val messagingSenderId: String? = null,
+    val appId: String,
+    val measurementId: String? = null
+)
 
 class MainGradlePlugin : Plugin<Project> {
     companion object {
@@ -21,37 +32,29 @@ class MainGradlePlugin : Plugin<Project> {
     }
 
     override fun apply(project: Project) {
-        // Only apply the config generation to application modules
         project.plugins.withId("com.android.application") {
             configureForApplication(project)
         }
     }
 
     private fun configureForApplication(project: Project) {
-        // Register the task first
-        val generateTask = project.tasks.register("generateBnotifyConfig", GenerateBnotifyConfigTask::class.java) {
+        val generateTask = project.tasks.register("generateBnotifyXml", GenerateBnotifyConfigTask::class.java) {
             group = "build"
-            description = "Generates Bnotify configuration from JSON"
+            description = "Generates bnotify_config.xml from JSON"
 
             val jsonFile = File("${project.rootDir}/app/${CONFIG_FILE_NAME}")
             if (!jsonFile.exists()) {
-                throw RuntimeException("${CONFIG_FILE_NAME} not found in app directory!")
+                throw GradleException("${CONFIG_FILE_NAME} not found in app directory!")
             }
             configPath.set(jsonFile)
-            outputDir.set(project.layout.buildDirectory.dir("generated/source/bnotify"))
-            packageName.set("com.example.mycustomlib.config")
 
-            doFirst {
-                if (!configPath.get().asFile.exists()) {
-                    throw GradleException(
-                        "$CONFIG_FILE_NAME not found in app directory!\n" +
-                                "Please add the bnotify-config.json file to your app module's directory."
-                    )
-                }
-            }
+            // Path to library's res folder
+            val libResDir = File(project.rootDir, "mycustomlib/src/main/res")
+            outputDir.set(libResDir)
+
+            packageName.set("com.example.mycustomlib")
         }
 
-        // Correct way to add the dependency
         project.afterEvaluate {
             project.tasks.named("preBuild") {
                 dependsOn(generateTask)
@@ -62,7 +65,7 @@ class MainGradlePlugin : Plugin<Project> {
 
 abstract class GenerateBnotifyConfigTask : DefaultTask() {
     @get:InputFile
-    @get:Optional  // Mark as optional to avoid configuration-time validation
+    @get:Optional
     abstract val configPath: RegularFileProperty
 
     @get:OutputDirectory
@@ -74,47 +77,40 @@ abstract class GenerateBnotifyConfigTask : DefaultTask() {
     @TaskAction
     fun generate() {
         val jsonFile = configPath.get().asFile
-        println("✅ Found ${jsonFile}, generating source file...")
+        println("✅ Found $jsonFile, generating XML...")
+
         val jsonContent = jsonFile.readText()
 
-        println("✅ Extracted JSON ${jsonContent}")
-
-        // Parse the JSON content into BnotifyConfig object
         val config = try {
             Json.decodeFromString<BnotifyConfig>(jsonContent)
         } catch (e: Exception) {
-            throw GradleException("Failed to parse bnotify-config.json: ${e.message}")
+            throw GradleException("Failed to parse $jsonFile: ${e.message}")
         }
 
-        val outputDirFile = outputDir.get().asFile
-        val packageDir = packageName.get().replace(".", "/")
+        // Ensure res/xml exists
+        val xmlDir = File(outputDir.get().asFile, "xml")
+        if (!xmlDir.exists()) xmlDir.mkdirs()
 
-        File(outputDirFile, "$packageDir/GeneratedConfig.kt").apply {
-            parentFile.mkdirs()
-            writeText("""
-            package ${packageName.get()}
-            
-            internal object GeneratedConfig {
-                // Raw JSON content
-                const val JSON = ${jsonContent.trimIndent().quoteForKotlin()}
-            
-                // Parsed fields
-                const val projectId: String = "${config.projectId}"
-                const val packageName: String = "${config.packageName}"
-                const val apiKey: String = "${config.apiKey}"
-                ${config.authDomain?.let { "const val authDomain: String = \"${it}\"" } ?: "const val authDomain: String? = null"}
-                ${config.databaseURL?.let { "const val databaseURL: String = \"${it}\"" } ?: "const val databaseURL: String? = null"}
-                ${config.storageBucket?.let { "const val storageBucket: String = \"${it}\"" } ?: "const val storageBucket: String? = null"}
-                ${config.messagingSenderId?.let { "const val messagingSenderId: String = \"${it}\"" } ?: "const val messagingSenderId: String? = null"}
-                const val appId: String = "${config.appId}"
-                ${config.measurementId?.let { "const val measurementId: String = \"${it}\"" } ?: "const val measurementId: String? = null"}
-            }
-        """.trimMargin())
-            println("✅ GeneratedConfig.kt is generated successfully")
-        }
+        val xmlFile = File(xmlDir, "bnotify_config.xml")
+        xmlFile.writeText(buildXml(config))
+
+        println("✅ bnotify_config.xml generated at: ${xmlFile.absolutePath}")
     }
 
-    private fun String.quoteForKotlin(): String {
-        return "\"\"\"${this.replace("\"\"\"", "\\\"\\\"\\\"")}\"\"\""
+    private fun buildXml(config: BnotifyConfig): String {
+        return buildString {
+            append("""<?xml version="1.0" encoding="utf-8"?>\n""")
+            append("<bnotifyConfig>\n")
+            append("    <projectId>${config.projectId}</projectId>\n")
+            append("    <packageName>${config.packageName}</packageName>\n")
+            append("    <apiKey>${config.apiKey}</apiKey>\n")
+            config.authDomain?.let { append("    <authDomain>$it</authDomain>\n") }
+            config.databaseURL?.let { append("    <databaseURL>$it</databaseURL>\n") }
+            config.storageBucket?.let { append("    <storageBucket>$it</storageBucket>\n") }
+            config.messagingSenderId?.let { append("    <messagingSenderId>$it</messagingSenderId>\n") }
+            append("    <appId>${config.appId}</appId>\n")
+            config.measurementId?.let { append("    <measurementId>$it</measurementId>\n") }
+            append("</bnotifyConfig>\n")
+        }
     }
 }

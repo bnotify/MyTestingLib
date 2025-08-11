@@ -1,1 +1,2 @@
 com.example.mycustomlib
+xml bnotify_config
