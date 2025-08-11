@@ -48,7 +48,7 @@ class MainGradlePlugin : Plugin<Project> {
             }
             configPath.set(jsonFile)
 
-            // Path to library's res folder
+            // Directly point to library module's res folder
             val libResDir = File(project.rootDir, "mycustomlib/src/main/res")
             outputDir.set(libResDir)
 
@@ -56,9 +56,9 @@ class MainGradlePlugin : Plugin<Project> {
         }
 
         project.afterEvaluate {
-            project.tasks.named("preBuild") {
-                dependsOn(generateTask)
-            }
+            // Ensure we run before resources are merged
+            project.tasks.matching { it.name.startsWith("merge") && it.name.endsWith("Resources") }
+                .configureEach { dependsOn(generateTask) }
         }
     }
 }
@@ -87,7 +87,7 @@ abstract class GenerateBnotifyConfigTask : DefaultTask() {
             throw GradleException("Failed to parse $jsonFile: ${e.message}")
         }
 
-        // Ensure res/xml exists
+        // Ensure res/xml exists in the library
         val xmlDir = File(outputDir.get().asFile, "xml")
         if (!xmlDir.exists()) xmlDir.mkdirs()
 
@@ -98,19 +98,19 @@ abstract class GenerateBnotifyConfigTask : DefaultTask() {
     }
 
     private fun buildXml(config: BnotifyConfig): String {
-        return buildString {
-            append("""<?xml version="1.0" encoding="utf-8"?>\n""")
-            append("<bnotifyConfig>\n")
-            append("    <projectId>${config.projectId}</projectId>\n")
-            append("    <packageName>${config.packageName}</packageName>\n")
-            append("    <apiKey>${config.apiKey}</apiKey>\n")
-            config.authDomain?.let { append("    <authDomain>$it</authDomain>\n") }
-            config.databaseURL?.let { append("    <databaseURL>$it</databaseURL>\n") }
-            config.storageBucket?.let { append("    <storageBucket>$it</storageBucket>\n") }
-            config.messagingSenderId?.let { append("    <messagingSenderId>$it</messagingSenderId>\n") }
-            append("    <appId>${config.appId}</appId>\n")
-            config.measurementId?.let { append("    <measurementId>$it</measurementId>\n") }
-            append("</bnotifyConfig>\n")
-        }
+        return """
+        <?xml version="1.0" encoding="utf-8"?>
+        <bnotifyConfig>
+            <projectId>${config.projectId}</projectId>
+            <packageName>${config.packageName}</packageName>
+            <apiKey>${config.apiKey}</apiKey>
+            ${config.authDomain?.let { "<authDomain>$it</authDomain>" } ?: ""}
+            ${config.databaseURL?.let { "<databaseURL>$it</databaseURL>" } ?: ""}
+            ${config.storageBucket?.let { "<storageBucket>$it</storageBucket>" } ?: ""}
+            ${config.messagingSenderId?.let { "<messagingSenderId>$it</messagingSenderId>" } ?: ""}
+            <appId>${config.appId}</appId>
+            ${config.measurementId?.let { "<measurementId>$it</measurementId>" } ?: ""}
+        </bnotifyConfig>
+    """.trimIndent()
     }
 }
