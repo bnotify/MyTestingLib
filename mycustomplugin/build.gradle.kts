@@ -43,7 +43,7 @@ publishing {
         create<MavenPublication>("pluginMaven") {
             groupId = "com.github.bnotify"
             artifactId = "mycustomplugin"
-            version = "1.1.4"
+            version = "1.1.5"
 
             artifact(tasks.register("pluginMarker", Jar::class) {
                 archiveClassifier.set("plugin-marker")
