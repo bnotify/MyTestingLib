@@ -8,7 +8,7 @@ import java.io.File
 import com.google.gson.Gson
 import org.gradle.kotlin.dsl.configure
 
-open class MyCustomPlugin : Plugin<Project> {
+open class MainGradlePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val configFile = project.file("app/bnotify-config.json")
         val outputDir: Directory = project.layout.buildDirectory.dir("generated/source/config").get()
