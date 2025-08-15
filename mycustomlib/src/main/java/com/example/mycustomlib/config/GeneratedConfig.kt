@@ -1,14 +1,14 @@
 package com.example.mycustomlib.config
 
-internal object GeneratedConfig {
-    const val JSON = ""
-    const val projectId = ""
-    const val packageName = ""
-    const val apiKey = ""
-    const val authDomain = ""
-    const val databaseURL = ""
-    const val storageBucket = ""
-    const val messagingSenderId = ""
-    const val appId = ""
-    const val measurementId = ""
+object GeneratedConfig {
+    lateinit var JSON: String;
+    var projectId = ""
+    var packageName = ""
+    var apiKey = ""
+    var authDomain = ""
+    var databaseURL = ""
+    var storageBucket = ""
+    var messagingSenderId = ""
+    var appId = ""
+    var measurementId = ""
 }

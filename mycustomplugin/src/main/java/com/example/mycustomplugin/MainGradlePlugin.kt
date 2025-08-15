@@ -1,174 +1,101 @@
 package com.example.mycustomplugin
 
-import org.gradle.api.DefaultTask
+import kotlinx.serialization.json.Json
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.provider.Property
-import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.OutputFile
-import org.gradle.api.tasks.TaskAction
-import org.gradle.internal.impldep.com.google.gson.Gson
-import org.gradle.internal.impldep.com.google.gson.JsonElement
-import org.gradle.internal.impldep.com.google.gson.JsonObject
 import java.io.File
+import kotlinx.serialization.Serializable
 
-class MainGradlePlugin : Plugin<Project> {
+@Serializable
+internal data class BnotifyConfig(
+    val projectId: String,
+    val packageName: String,
+    val apiKey: String,
+    val authDomain: String? = null,
+    val databaseURL: String? = null,
+    val storageBucket: String? = null,
+    val messagingSenderId: String? = null,  // Optional field
+    val appId: String,
+    val measurementId: String? = null
+)
+
+class MainGradlePlugin: Plugin<Project>  {
+
+    private val CONFIG_FILE_NAME: String = "bnotify-config.json"
+
     override fun apply(project: Project) {
-        // Apply only to Android modules (app or library)
-        project.plugins.withId("com.android.application") { configure(project) }
-        project.plugins.withId("com.android.library") { configure(project) }
+        println("✅ Custom Plugin Applied!")
+        // Your plugin logic here
+//        checkJsonFileConfig(project)
+        checkAndGenerateConfig(project)
     }
 
-    private fun configure(project: Project) {
-        val rootJson = project.rootProject.file("bnotify-config.json")
-
-        // Register task even if file is missing (so build doesn’t fail), but mark it up-to-date-aware.
-        val genTask = project.tasks.register("generateBNotifyConfig", GenerateBNotifyConfigTask::class.java) {
-            group = "bnotify"
-            description = "Generate GeneratedConfig.kt from root bnotify-config.json and copy JSON to res/raw."
-
-            // Inputs / outputs
-            inputJson.set(rootJson)
-            val outKotlinDir = File(project.buildDir, "generated/source/bnotify/kotlin/com/bnotify/generated")
-            outputKotlinDir.set(outKotlinDir)
-
-            val resRaw = File(project.projectDir, "src/main/res/raw/bnotify_config.json")
-            outputResJson.set(resRaw)
-
-            // Only run if JSON exists
-            onlyIf { rootJson.exists() }
-        }
-
-        // Add generated sources to the Android sourceSet
-        // AGP 7/8 compatibility: try BaseExtension first, then fallback
+    private fun checkJsonFileConfig(project: Project){
+        System.out.println("✅ FileCheckPlugin has been applied"); // ADD THIS
         project.afterEvaluate {
-            val outDirParent = File(project.buildDir, "generated/source/bnotify/kotlin")
-            val androidExt = project.extensions.findByName("android")
-
-            try {
-                val baseExtClass = Class.forName("com.android.build.gradle.BaseExtension")
-                if (baseExtClass.isInstance(androidExt)) {
-                    val sourceSets = baseExtClass.getMethod("getSourceSets").invoke(androidExt)
-                    val containerClass = Class.forName("org.gradle.api.NamedDomainObjectContainer")
-                    val getByName = containerClass.getMethod("getByName", String::class.java)
-                    val main = getByName.invoke(sourceSets, "main")
-                    val mainClass = Class.forName(main.javaClass.name)
-                    val getJava = mainClass.getMethod("getJava")
-                    val javaDirs = getJava.invoke(main) as org.gradle.api.file.SourceDirectorySet
-                    javaDirs.srcDir(outDirParent)
-                }
-            } catch (_: Throwable) {
-                // No-op: on newer AGP you could alternatively wire via Android Components API.
-            }
-
-            // Make sure generation runs before compilation
-            project.tasks.matching { it.name == "preBuild" }.configureEach {
-                dependsOn(genTask)
+            var path: File = File("${rootDir}/app/")
+            val requiredFile: File = project.file("${path}/${CONFIG_FILE_NAME}")
+//            System.out.println("🔍 Checking file: " + requiredFile.getAbsolutePath()); // ADD THIS
+            if (!requiredFile.exists()) {
+                throw RuntimeException("CompileTimeException: Required \"BerryNotifierConfig\" file not found: ${path.path}/${CONFIG_FILE_NAME}")
+            } else {
+                System.out.println("✅ Found required file: ${CONFIG_FILE_NAME}");
             }
         }
     }
-}
 
-abstract class GenerateBNotifyConfigTask : DefaultTask() {
-
-    @get:InputFile
-    abstract val inputJson: RegularFileProperty
-
-    @get:OutputDirectory
-    abstract val outputKotlinDir: Property<File>
-
-    @get:OutputFile
-    abstract val outputResJson: RegularFileProperty
-
-    @TaskAction
-    fun generate() {
-        val jsonFile = inputJson.asFile.get()
-        val jsonText = jsonFile.readText()
-
-        val gson = Gson()
-        val root: JsonObject = gson.fromJson(jsonText, JsonObject::class.java)
-
-        // 1) Generate Kotlin
-        val outDir = outputKotlinDir.get()
-        val pkg = "com.bnotify.generated"
-        val file = File(outDir, "GeneratedConfig.kt")
-        outDir.mkdirs()
-
-        file.writeText(generateKotlin(pkg, root))
-
-        // 2) Copy JSON into res/raw
-        val resFile = outputResJson.asFile.get()
-        resFile.parentFile.mkdirs()
-        jsonFile.copyTo(resFile, overwrite = true)
-    }
-
-    private fun generateKotlin(pkg: String, root: JsonObject): String {
-        val b = StringBuilder()
-        b.appendLine("package $pkg")
-        b.appendLine()
-        b.appendLine("/**")
-        b.appendLine(" * Auto-generated by BNotify Config Plugin.")
-        b.appendLine(" * DO NOT EDIT MANUALLY.")
-        b.appendLine(" */")
-        b.appendLine("object GeneratedConfig {")
-
-        for ((key, value) in root.entrySet()) {
-            val name = sanitizeKey(key)
-            val decl = when {
-                value.isJsonNull -> "val $name: String? = null"
-                value.isJsonPrimitive && value.asJsonPrimitive.isBoolean ->
-                    "const val $name: Boolean = ${value.asBoolean}"
-                value.isJsonPrimitive && value.asJsonPrimitive.isNumber -> {
-                    // Keep integral numbers as Long if possible, otherwise Double
-                    val num = value.asNumber
-                    val asStr = num.toString()
-                    if (asStr.contains('.') || asStr.contains('e', ignoreCase = true)) {
-                        "const val $name: Double = ${asStr}"
-                    } else {
-                        // Fits in Long? try; else fallback to Double
-                        runCatching { asStr.toLong() }.fold(
-                            onSuccess = { "const val $name: Long = ${asStr}L" },
-                            onFailure = { "const val $name: Double = ${asStr}" }
-                        )
-                    }
-                }
-                value.isJsonPrimitive && value.asJsonPrimitive.isString ->
-                    "const val $name: String = ${value.toKotlinStringLiteral()}"
-                else -> {
-                    // For arrays/objects: store raw JSON string
-                    val raw = value.toString().toKotlinRawString()
-                    "const val ${name}_JSON: String = $raw"
-                }
-            }
-            b.appendLine("    $decl")
+    private fun checkAndGenerateConfig(project: Project) {
+        val jsonFile = File("${project.rootDir}/app/${CONFIG_FILE_NAME}")
+        if (!jsonFile.exists()) {
+            throw RuntimeException("${CONFIG_FILE_NAME} not found in app directory!")
         }
 
-        b.appendLine("}")
-        return b.toString()
+        val jsonContent = jsonFile.readText()
+        println("✅ Found ${CONFIG_FILE_NAME}, generating source file...")
+
+        // Parse JSON using Kotlinx Serialization
+        val config = try {
+            Json.decodeFromString<BnotifyConfig>(jsonContent)
+        } catch (e: Exception) {
+            throw RuntimeException("Failed to parse ${CONFIG_FILE_NAME}: ${e.message}")
+        }
+
+        val outputDir = File(project.buildDir, "generated/source/config")
+        val packageName = "com.example.mycustomlib.config"
+        val className = "GeneratedConfig"
+
+        val configFile = File(outputDir, "$className.kt")
+
+        configFile.writeText(
+            """
+        package $packageName
+
+        object $className {
+            var JSON = ${jsonContent.trim().quoteForKotlin()}
+            var projectId = "${config.projectId}"
+            var packageName = "${config.packageName}"
+            var apiKey = "${config.apiKey}"
+            var authDomain = "${config.authDomain}"
+            var databaseURL = "${config.databaseURL}"
+            var storageBucket = "${config.storageBucket}"
+            var messagingSenderId = "${config.messagingSenderId}"
+            var appId = "${config.appId}"
+            var measurementId = "${config.measurementId}"
+        }
+        """.trimIndent()
+        )
+
+        // Tell Gradle to include this source directory in the compilation
+        project.extensions.findByName("android").let { androidExt->
+            val android = androidExt as com.android.build.gradle.BaseExtension
+            android.sourceSets.getByName("main").java.srcDir(outputDir)
+        }
+
     }
 
-    private fun sanitizeKey(key: String): String {
-        // UpperCamel -> UPPER_SNAKE const style is optional; we’ll keep simple safe identifiers.
-        val cleaned = key.replace(Regex("[^A-Za-z0-9_]"), "_")
-        val startsWithDigit = cleaned.firstOrNull()?.isDigit() == true
-        val safe = if (startsWithDigit) "_$cleaned" else cleaned
-        return if (safe.isEmpty()) "key_${key.hashCode().toString().replace('-','_')}" else safe
+    private fun String.quoteForKotlin(): String {
+        // Escape string for Kotlin string literal
+        return "\"${this.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n")}\""
     }
 
-    private fun JsonElement.toKotlinStringLiteral(): String {
-        val s = this.asString
-        return "\"" + s
-            .replace("\\", "\\\\")
-            .replace("\"", "\\\"")
-            .replace("\n", "\\n")
-            .replace("\r", "\\r")
-            .replace("\t", "\\t") + "\""
-    }
-
-    private fun String.toKotlinRawString(): String {
-        // Use triple-quoted form for raw JSON
-        return "\"\"\"$this\"\"\""
-    }
 }
