@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.example.mycustomplugin
 
 import org.gradle.api.*
@@ -9,8 +11,11 @@ import com.google.gson.Gson
 import org.gradle.kotlin.dsl.configure
 
 open class MainGradlePlugin : Plugin<Project> {
+
+    private val CONFIG_FILE_NAME: String = "bnotify-config.json"
+
     override fun apply(project: Project) {
-        val configFile = project.file("app/bnotify-config.json")
+        val configFile = project.file(CONFIG_FILE_NAME)
         val outputDir: Directory = project.layout.buildDirectory.dir("generated/source/config").get()
         val generatedFile = outputDir.file("GeneratedConfig.kt").asFile
 
@@ -40,6 +45,8 @@ open class MainGradlePlugin : Plugin<Project> {
 // ---------------- Task ----------------
 abstract class GenerateConfigTask : DefaultTask() {
 
+    private val CONFIG_FILE_NAME: String = "bnotify-config.json"
+
     @get:InputFile
     lateinit var configFile: File
 
@@ -49,8 +56,8 @@ abstract class GenerateConfigTask : DefaultTask() {
     @TaskAction
     fun generate() {
         if (!configFile.exists()) {
-            logger.warn("⚠ bnotify-config.json not found at: ${configFile.absolutePath}")
-            return
+            logger.warn("❌ ${CONFIG_FILE_NAME} not found at: ${configFile.absolutePath}")
+            throw GradleException("❌ ${CONFIG_FILE_NAME} not found at: ${configFile.absolutePath}")
         }
 
         val jsonData = configFile.readText()
