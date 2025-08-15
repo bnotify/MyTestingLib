@@ -1,4 +1,4 @@
-package com.github.bnotify.mycustomplugin
+package com.example.mycustomplugin
 
 import org.gradle.api.*
 import org.gradle.api.file.Directory
