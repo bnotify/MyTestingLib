@@ -1,20 +1,11 @@
 package com.example.mycustomplugin
 
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
-import kotlinx.serialization.Serializable
-import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
-import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.provider.Property
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.TaskAction
+
 
 @Serializable
 internal data class BnotifyConfig(
@@ -37,163 +28,107 @@ class MainGradlePlugin: Plugin<Project>  {
         println("✅ Custom Plugin Applied!")
         // Your plugin logic here
 //        checkJsonFileConfig(project)
-//        checkAndGenerateConfig(project)
-        // Only apply the config generation to application modules
-        project.plugins.withId("com.android.application") {
-            configureForApplication(project)
-        }
+        checkAndGenerateConfig(project)
     }
 
-    private fun checkJsonFileConfig(project: Project){
-        System.out.println("✅ FileCheckPlugin has been applied"); // ADD THIS
-        project.afterEvaluate {
-            var path: File = File("${rootDir}/app/")
-            val requiredFile: File = project.file("${path}/${CONFIG_FILE_NAME}")
-//            System.out.println("🔍 Checking file: " + requiredFile.getAbsolutePath()); // ADD THIS
-            if (!requiredFile.exists()) {
-                throw RuntimeException("CompileTimeException: Required \"BerryNotifierConfig\" file not found: ${path.path}/${CONFIG_FILE_NAME}")
-            } else {
-                System.out.println("✅ Found required file: ${CONFIG_FILE_NAME}");
-            }
-        }
-    }
-
-    private fun checkAndGenerateConfig(project: Project) {
-        val jsonFile = File("${project.rootDir}/app/${CONFIG_FILE_NAME}")
-        if (!jsonFile.exists()) {
-            throw RuntimeException("${CONFIG_FILE_NAME} not found in app directory!")
-        }
-
-        val jsonContent = jsonFile.readText()
-        println("✅ Found ${CONFIG_FILE_NAME}, generating source file...")
-
-        // Parse JSON using Kotlinx Serialization
-        val config = try {
-            Json.decodeFromString<BnotifyConfig>(jsonContent)
-        } catch (e: Exception) {
-            throw RuntimeException("Failed to parse ${CONFIG_FILE_NAME}: ${e.message}")
-        }
-
-        val outputDir = File(project.buildDir, "generated/source/config")
+    /*private fun checkAndGenerateConfig(project: Project) {
+        val outputDir = File(project.layout.buildDirectory.get().asFile, "generated/source/config")
         val packageName = "com.example.mycustomlib.config"
         val className = "GeneratedConfig"
 
-        val configFile = File(outputDir, "$className.kt")
+        // Register the task
+        val generateTask = project.tasks.register("generateConfig") {
+            outputs.dir(outputDir) // tell Gradle this task produces files here
 
-        configFile.writeText(
-            """
-        package $packageName
+            doLast {
+                val jsonFile = File("${project.rootDir}/app/$CONFIG_FILE_NAME")
+                if (!jsonFile.exists()) {
+                    throw RuntimeException("$CONFIG_FILE_NAME not found in app directory!")
+                }
 
-        object $className {
-            var JSON = ${jsonContent.trim().quoteForKotlin()}
-            var projectId = "${config.projectId}"
-            var packageName = "${config.packageName}"
-            var apiKey = "${config.apiKey}"
-            var authDomain = "${config.authDomain}"
-            var databaseURL = "${config.databaseURL}"
-            var storageBucket = "${config.storageBucket}"
-            var messagingSenderId = "${config.messagingSenderId}"
-            var appId = "${config.appId}"
-            var measurementId = "${config.measurementId}"
+                val jsonContent = jsonFile.readText()
+                val config = Json.decodeFromString<BnotifyConfig>(jsonContent)
+
+                val configFile = File(outputDir, "$className.kt")
+                configFile.parentFile.mkdirs()
+                configFile.writeText(
+                    """
+                package $packageName
+
+                object $className {
+                    var JSON = ${jsonContent.trim().quoteForKotlin()}
+                    var projectId = "${config.projectId}"
+                    var packageName = "${config.packageName}"
+                    var apiKey = "${config.apiKey}"
+                    var authDomain = "${config.authDomain}"
+                    var databaseURL = "${config.databaseURL}"
+                    var storageBucket = "${config.storageBucket}"
+                    var messagingSenderId = "${config.messagingSenderId}"
+                    var appId = "${config.appId}"
+                    var measurementId = "${config.measurementId}"
+                }
+                """.trimIndent()
+                )
+            }
         }
-        """.trimIndent()
-        )
 
-        // Tell Gradle to include this source directory in the compilation
-        project.extensions.findByName("android").let { androidExt->
+        // ✅ Add generated dir to sources DURING CONFIGURATION
+        project.extensions.findByName("android")?.let { androidExt ->
             val android = androidExt as com.android.build.gradle.BaseExtension
             android.sourceSets.getByName("main").java.srcDir(outputDir)
         }
 
-    }
+        // Ensure generation happens before compile
+        project.tasks.named("preBuild") { dependsOn(generateTask) }
+    }*/
 
-    private fun configureForApplication(project: Project) {
-        // Register the task first
-        val generateTask = project.tasks.register("generateBnotifyConfig", GenerateBnotifyConfigTask::class.java) {
-            group = "build"
-            description = "Generates Bnotify configuration from JSON"
+    private fun checkAndGenerateConfig(project: Project) {
+        val packagePath = "com/example/mycustomlib/config"
+        val outputFile = File(project.projectDir, "src/main/java/$packagePath/GeneratedConfig.kt")
 
-            val jsonFile = File("${project.rootDir}/app/${CONFIG_FILE_NAME}")
-            if (!jsonFile.exists()) {
-                throw RuntimeException("${CONFIG_FILE_NAME} not found in app directory!")
-            }
-            configPath.set(jsonFile)
-            outputDir.set(project.layout.buildDirectory.dir("generated/source/bnotify"))
-            packageName.set("com.example.mycustomlib.config")
-
-            doFirst {
-                if (!configPath.get().asFile.exists()) {
-                    throw GradleException(
-                        "$CONFIG_FILE_NAME not found in app directory!\n" +
-                                "Please add the ${CONFIG_FILE_NAME} file to your app module's directory."
-                    )
+        val generateTask = project.tasks.register("generateConfig") {
+            doLast {
+                val jsonFile = File("${project.rootDir}/app/$CONFIG_FILE_NAME")
+                if (!jsonFile.exists()) {
+                    println("⚠ No $CONFIG_FILE_NAME found, keeping default GeneratedConfig.")
+                    return@doLast
                 }
+
+                val jsonContent = jsonFile.readText()
+                val config = Json.decodeFromString<BnotifyConfig>(jsonContent)
+
+                outputFile.parentFile.mkdirs()
+                outputFile.writeText(
+                    """
+                package com.example.mycustomlib.config
+
+                object GeneratedConfig {
+                    var JSON: String? = ${jsonContent.trim().quoteForKotlin()}
+                    var projectId: String? = "${config.projectId}"
+                    var packageName: String? = "${config.packageName}"
+                    var apiKey: String? = "${config.apiKey}"
+                    var authDomain: String? = "${config.authDomain}"
+                    var databaseURL: String? = "${config.databaseURL}"
+                    var storageBucket: String? = "${config.storageBucket}"
+                    var messagingSenderId: String? = "${config.messagingSenderId}"
+                    var appId: String? = "${config.appId}"
+                    var measurementId: String? = "${config.measurementId}"
+                }
+                """.trimIndent()
+                )
             }
         }
 
-        // Correct way to add the dependency
-        project.afterEvaluate {
-            project.tasks.named("preBuild") {
-                dependsOn(generateTask)
-            }
+        // Ensure generation runs before compileKotlin
+        project.tasks.matching { it.name.startsWith("compile") }.configureEach {
+            dependsOn(generateTask)
         }
     }
+
 
     private fun String.quoteForKotlin(): String {
         // Escape string for Kotlin string literal
         return "\"${this.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n")}\""
     }
 
-}
-
-abstract class GenerateBnotifyConfigTask : DefaultTask() {
-    @get:InputFile
-    @get:Optional  // Mark as optional to avoid configuration-time validation
-    abstract val configPath: RegularFileProperty
-
-    @get:OutputDirectory
-    abstract val outputDir: DirectoryProperty
-
-    @get:Input
-    abstract val packageName: Property<String>
-
-    @TaskAction
-    fun generate() {
-        val jsonFile = configPath.get().asFile
-        val jsonContent = jsonFile.readText()
-
-        // Parse the JSON content into BnotifyConfig object
-        val config = try {
-            Json.decodeFromString<BnotifyConfig>(jsonContent)
-        } catch (e: Exception) {
-            throw GradleException("Failed to parse bnotify-config.json: ${e.message}")
-        }
-
-        val outputDirFile = outputDir.get().asFile
-        val packageDir = packageName.get().replace(".", "/")
-
-        File(outputDirFile, "$packageDir/GeneratedConfig.kt").apply {
-            parentFile.mkdirs()
-            writeText("""
-            package $packageName
-
-            object GeneratedConfig {
-                var JSON = ${jsonContent.trim().quoteForKotlin()}
-                var projectId = "${config.projectId}"
-                var packageName = "${config.packageName}"
-                var apiKey = "${config.apiKey}"
-                var authDomain = "${config.authDomain}"
-                var databaseURL = "${config.databaseURL}"
-                var storageBucket = "${config.storageBucket}"
-                var messagingSenderId = "${config.messagingSenderId}"
-                var appId = "${config.appId}"
-                var measurementId = "${config.measurementId}"
-            }
-        """.trimMargin())
-        }
-    }
-
-    private fun String.quoteForKotlin(): String {
-        return "\"\"\"${this.replace("\"\"\"", "\\\"\\\"\\\"")}\"\"\""
-    }
 }

@@ -3,15 +3,17 @@
   <groupId>com.github.bnotify.mycustomplugin</groupId>
   <artifactId>com.github.bnotify.mycustomplugin.gradle.plugin</artifactId>
   <versioning>
-    <latest>1.1.4</latest>
-    <release>1.1.4</release>
+    <latest>1.1.7</latest>
+    <release>1.1.7</release>
     <versions>
       <version>unspecified</version>
       <version>1.1.0</version>
       <version>1.1.2</version>
       <version>1.1.3</version>
       <version>1.1.4</version>
+      <version>1.1.6</version>
+      <version>1.1.7</version>
     </versions>
-    <lastUpdated>20250813134221</lastUpdated>
+    <lastUpdated>20250815104635</lastUpdated>
   </versioning>
 </metadata>
