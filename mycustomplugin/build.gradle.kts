@@ -6,6 +6,7 @@ plugins {
 }
 
 val kotlinVersion = "2.0.21" // Define once for consistency
+val myPluginVersion = "1.1.6" // Define once for consistency
 
 repositories {
     google()
@@ -33,7 +34,7 @@ gradlePlugin {
             id = "com.github.bnotify.mycustomplugin"
 //            id = "com.example.mycustomplugin" // Match your package
             implementationClass = "com.example.mycustomplugin.MainGradlePlugin"
-            version = "1.1.4" // Add version here
+            version = myPluginVersion// Add version here
         }
     }
 }
@@ -43,7 +44,7 @@ publishing {
         create<MavenPublication>("pluginMaven") {
             groupId = "com.github.bnotify"
             artifactId = "mycustomplugin"
-            version = "1.1.5"
+            version = myPluginVersion
 
             artifact(tasks.register("pluginMarker", Jar::class) {
                 archiveClassifier.set("plugin-marker")

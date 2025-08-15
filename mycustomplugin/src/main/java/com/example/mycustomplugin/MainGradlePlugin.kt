@@ -5,6 +5,16 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
 import kotlinx.serialization.Serializable
+import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.TaskAction
 
 @Serializable
 internal data class BnotifyConfig(
@@ -27,7 +37,11 @@ class MainGradlePlugin: Plugin<Project>  {
         println("✅ Custom Plugin Applied!")
         // Your plugin logic here
 //        checkJsonFileConfig(project)
-        checkAndGenerateConfig(project)
+//        checkAndGenerateConfig(project)
+        // Only apply the config generation to application modules
+        project.plugins.withId("com.android.application") {
+            configureForApplication(project)
+        }
     }
 
     private fun checkJsonFileConfig(project: Project){
@@ -93,9 +107,93 @@ class MainGradlePlugin: Plugin<Project>  {
 
     }
 
+    private fun configureForApplication(project: Project) {
+        // Register the task first
+        val generateTask = project.tasks.register("generateBnotifyConfig", GenerateBnotifyConfigTask::class.java) {
+            group = "build"
+            description = "Generates Bnotify configuration from JSON"
+
+            val jsonFile = File("${project.rootDir}/app/${CONFIG_FILE_NAME}")
+            if (!jsonFile.exists()) {
+                throw RuntimeException("${CONFIG_FILE_NAME} not found in app directory!")
+            }
+            configPath.set(jsonFile)
+            outputDir.set(project.layout.buildDirectory.dir("generated/source/bnotify"))
+            packageName.set("com.example.mycustomlib.config")
+
+            doFirst {
+                if (!configPath.get().asFile.exists()) {
+                    throw GradleException(
+                        "$CONFIG_FILE_NAME not found in app directory!\n" +
+                                "Please add the ${CONFIG_FILE_NAME} file to your app module's directory."
+                    )
+                }
+            }
+        }
+
+        // Correct way to add the dependency
+        project.afterEvaluate {
+            project.tasks.named("preBuild") {
+                dependsOn(generateTask)
+            }
+        }
+    }
+
     private fun String.quoteForKotlin(): String {
         // Escape string for Kotlin string literal
         return "\"${this.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n")}\""
     }
 
+}
+
+abstract class GenerateBnotifyConfigTask : DefaultTask() {
+    @get:InputFile
+    @get:Optional  // Mark as optional to avoid configuration-time validation
+    abstract val configPath: RegularFileProperty
+
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
+
+    @get:Input
+    abstract val packageName: Property<String>
+
+    @TaskAction
+    fun generate() {
+        val jsonFile = configPath.get().asFile
+        val jsonContent = jsonFile.readText()
+
+        // Parse the JSON content into BnotifyConfig object
+        val config = try {
+            Json.decodeFromString<BnotifyConfig>(jsonContent)
+        } catch (e: Exception) {
+            throw GradleException("Failed to parse bnotify-config.json: ${e.message}")
+        }
+
+        val outputDirFile = outputDir.get().asFile
+        val packageDir = packageName.get().replace(".", "/")
+
+        File(outputDirFile, "$packageDir/GeneratedConfig.kt").apply {
+            parentFile.mkdirs()
+            writeText("""
+            package $packageName
+
+            object GeneratedConfig {
+                var JSON = ${jsonContent.trim().quoteForKotlin()}
+                var projectId = "${config.projectId}"
+                var packageName = "${config.packageName}"
+                var apiKey = "${config.apiKey}"
+                var authDomain = "${config.authDomain}"
+                var databaseURL = "${config.databaseURL}"
+                var storageBucket = "${config.storageBucket}"
+                var messagingSenderId = "${config.messagingSenderId}"
+                var appId = "${config.appId}"
+                var measurementId = "${config.measurementId}"
+            }
+        """.trimMargin())
+        }
+    }
+
+    private fun String.quoteForKotlin(): String {
+        return "\"\"\"${this.replace("\"\"\"", "\\\"\\\"\\\"")}\"\"\""
+    }
 }
