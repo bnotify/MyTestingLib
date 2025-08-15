@@ -6,7 +6,7 @@ plugins {
 }
 
 //val kotlinVersion = "2.0.21" // Define once for consistency
-val myPluginVersion = "1.1.8" // Define once for consistency
+val myPluginVersion = "1.1.9" // Define once for consistency
 
 repositories {
     google()
@@ -26,6 +26,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation(gradleApi())
     implementation("com.android.tools.build:gradle:8.11.1")
+    implementation("com.google.code.gson:gson:2.13.1")
 }
 
 gradlePlugin {

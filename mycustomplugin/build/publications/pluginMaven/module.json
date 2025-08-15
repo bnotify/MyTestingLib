@@ -3,7 +3,7 @@
   "component": {
     "group": "com.github.bnotify",
     "module": "mycustomplugin",
-    "version": "1.1.8",
+    "version": "1.1.9",
     "attributes": {
       "org.gradle.status": "release"
     }
@@ -27,13 +27,13 @@
       },
       "files": [
         {
-          "name": "mycustomplugin-1.1.8.jar",
-          "url": "mycustomplugin-1.1.8.jar",
-          "size": 20014,
-          "sha512": "2cb1eb1f0ed1333c0bd766a3965ebb5fcbb78256d31e57672b3465b5bbae8168de3cc709fc0067515eb8155bd78a7b6c0f95d05ccfe626e15f60fe30b17d46d4",
-          "sha256": "40445aabf5551a8840d64f42fe764ec57125e4b9f309efe93d4332b8b0e7e94a",
-          "sha1": "fb7d5ac0cc2e7c99f4286037a903ab702a663b45",
-          "md5": "bf4cb4af9812984e564f99bb0804de54"
+          "name": "mycustomplugin-1.1.9.jar",
+          "url": "mycustomplugin-1.1.9.jar",
+          "size": 16714,
+          "sha512": "d3d37ea2288a314e8969f0228672e2989a22d23e96196944b2e9fc9126e455666f0cad699c8150f2686331dc3ed329b10c399d0689480e802a3a18443ba1919a",
+          "sha256": "6572066a5bef06d9212fefde23f81e72736b4f764369b8db5dee54fdbffa05b6",
+          "sha1": "c4467418f6eb23b626840fd2b811d086221bd4a1",
+          "md5": "8528748830f701f2835c7988a71cee93"
         }
       ]
     },
@@ -66,6 +66,13 @@
           "version": {
             "requires": "8.11.1"
           }
+        },
+        {
+          "group": "com.google.code.gson",
+          "module": "gson",
+          "version": {
+            "requires": "2.13.1"
+          }
         }
       ],
       "dependencyConstraints": [
@@ -79,13 +86,13 @@
       ],
       "files": [
         {
-          "name": "mycustomplugin-1.1.8.jar",
-          "url": "mycustomplugin-1.1.8.jar",
-          "size": 20014,
-          "sha512": "2cb1eb1f0ed1333c0bd766a3965ebb5fcbb78256d31e57672b3465b5bbae8168de3cc709fc0067515eb8155bd78a7b6c0f95d05ccfe626e15f60fe30b17d46d4",
-          "sha256": "40445aabf5551a8840d64f42fe764ec57125e4b9f309efe93d4332b8b0e7e94a",
-          "sha1": "fb7d5ac0cc2e7c99f4286037a903ab702a663b45",
-          "md5": "bf4cb4af9812984e564f99bb0804de54"
+          "name": "mycustomplugin-1.1.9.jar",
+          "url": "mycustomplugin-1.1.9.jar",
+          "size": 16714,
+          "sha512": "d3d37ea2288a314e8969f0228672e2989a22d23e96196944b2e9fc9126e455666f0cad699c8150f2686331dc3ed329b10c399d0689480e802a3a18443ba1919a",
+          "sha256": "6572066a5bef06d9212fefde23f81e72736b4f764369b8db5dee54fdbffa05b6",
+          "sha1": "c4467418f6eb23b626840fd2b811d086221bd4a1",
+          "md5": "8528748830f701f2835c7988a71cee93"
         }
       ]
     }
