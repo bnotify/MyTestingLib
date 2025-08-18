@@ -2,6 +2,9 @@
 
 package com.example.mycustomplugin
 
+import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.ApplicationVariant
+import com.android.build.gradle.BaseExtension
 import org.gradle.api.*
 import org.gradle.api.file.Directory
 import org.gradle.api.tasks.*
@@ -15,27 +18,35 @@ open class MainGradlePlugin : Plugin<Project> {
     private val CONFIG_FILE_NAME: String = "bnotify-config.json"
 
     override fun apply(project: Project) {
-        val configFile = project.file(CONFIG_FILE_NAME)
-        val outputDir: Directory = project.layout.buildDirectory.dir("generated/source/config").get()
-        val generatedFile = outputDir.file("GeneratedConfig.kt").asFile
+        // Directory for generated Kotlin source
+        val outputDir: Directory = project.layout
+            .buildDirectory
+            .dir("generated/source/config")
+            .get()
 
-        // Task: Generate config
-        val generateConfig = project.tasks.register<GenerateConfigTask>("generateBnotifyConfig") {
+        val generatedFile = outputDir.file("GeneratedConfig.kt").asFile
+        val configFile = project.file(CONFIG_FILE_NAME)
+
+        // Register custom task
+        val generateConfigTask = project.tasks.register(
+            "generateBnotifyConfig",
+            GenerateConfigTask::class.java
+        ) {
             this.configFile = configFile
             this.outputFile = generatedFile
         }
 
-        // Make compile tasks depend on generation
+        // Hook into Android build
         project.plugins.withId("com.android.application") {
-            project.extensions.configure<com.android.build.gradle.BaseExtension> {
-                sourceSets.getByName("main").java.srcDir(outputDir)
+            val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
 
-                // For every build type, hook before compilation
-                project.afterEvaluate {
-                    project.tasks.matching { it.name.startsWith("compile") && it.name.endsWith("Kotlin") }
-                        .configureEach {
-                            dependsOn(generateConfig)
-                        }
+            androidComponents.onVariants { variant ->
+                // Tell AGP where generated sources live
+                variant.sources.java?.addStaticSourceDirectory(outputDir.toString())
+
+                // Ensure compile tasks depend on the generator
+                project.tasks.named("compile${variant.name.replaceFirstChar { it.uppercase() }}Kotlin") {
+                    dependsOn(generateConfigTask)
                 }
             }
         }
@@ -68,6 +79,7 @@ abstract class GenerateConfigTask : DefaultTask() {
             appendLine("package com.example.mycustomlib.config")
             appendLine()
             appendLine("object GeneratedConfig {")
+            appendLine("val JSON = ${jsonData.trim().quoteForKotlin()}")
             for ((key, value) in data) {
                 val safeValue = value?.toString()?.replace("\"", "\\\"") ?: ""
                 appendLine("    val ${key} = \"$safeValue\"")
@@ -78,5 +90,13 @@ abstract class GenerateConfigTask : DefaultTask() {
         outputFile.parentFile.mkdirs()
         outputFile.writeText(content)
         logger.lifecycle("✅ Generated config at: ${outputFile.absolutePath}")
+    }
+
+
+
+
+    private fun String.quoteForKotlin(): String {
+        // Escape string for Kotlin string literal
+        return "\"${this.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n")}\""
     }
 }
