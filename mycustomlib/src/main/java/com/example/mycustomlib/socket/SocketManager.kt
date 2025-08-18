@@ -20,6 +20,8 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.core.content.ContextCompat
 import com.example.mycustomlib.activities.PermissionRequestActivity
+import com.example.mycustomlib.config.GeneratedConfig
+import com.example.mycustomlib.model.BnotifyConfig
 import com.example.mycustomlib.model.NotificationModel
 import com.example.mycustomlib.network.IPFinder.IPFinder
 import com.example.mycustomlib.network.IPFinder.IPFinderClass
@@ -242,9 +244,35 @@ object SocketManager {
         return isConnectionInProgress
     }
 
+    fun readBNotifyConfig(): BnotifyConfig? {
+        val json = GeneratedConfig.JSON ?: return null // safe null check
+
+        return try {
+            val jsonObject = JSONObject(json)
+            Log.i("Bnotify", "Extracted DATA: $json")
+
+            BnotifyConfig(
+                projectId = jsonObject.optString("projectId"),
+                packageName = jsonObject.optString("packageName"),
+                apiKey = jsonObject.optString("apiKey"),
+                authDomain = jsonObject.optString("authDomain"),
+                databaseURL = jsonObject.optString("databaseURL"),
+                storageBucket = jsonObject.optString("storageBucket"),
+                messagingSenderId = jsonObject.optString("messagingSenderId"),
+                appId = jsonObject.optString("appId"),
+                measurementId = jsonObject.optString("measurementId")
+            )
+        } catch (e: Exception) {
+            Log.e("Bnotify", "Failed to parse config: ${e.message}")
+            null
+        }
+    }
+
     private fun buildConnectionQuery(ipFinderResponse: IPFinderResponse): String {
 
         val (versionCode, versionName) = getAppVersionInfo(appContext)
+
+        var configs: BnotifyConfig = readBNotifyConfig()!!
 
         return listOf(
             "ip=${ipFinderResponse.data?.ip_data?.ip_address}",
@@ -266,8 +294,8 @@ object SocketManager {
             "lat=${ipFinderResponse.data?.ip_data?.latitude}",
             "lng=${ipFinderResponse.data?.ip_data?.longitude}",
             "uuid=${getPersistentDeviceId(appContext)}",
-            "projectId=689bb3f8b5d8ccdd33a554f5",
-            "appId=689bb43ada30124daf06fce3",
+            "projectId=${configs.projectId}",
+            "appId=${configs.appId}",
         ).joinToString("&")
     }
 
