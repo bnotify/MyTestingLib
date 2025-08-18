@@ -57,22 +57,16 @@ import kotlin.text.uppercase
 import kotlin.to
 
 object SocketManager {
-//    private val host = "wss://bnotify.convexinteractive.com"  // Live Server IP
-    private val host = "wss://d82f0f95ae89.ngrok-free.app"  // Server IP
+    private val host = "wss://bnotify.convexinteractive.com"  // Live Server IP
+//    private val host = "wss://d82f0f95ae89.ngrok-free.app"  // Server IP
     private val port = 3000
     private lateinit var socket: Socket
     private lateinit var appContext: Context
-    private lateinit var networkMonitor: NetworkMonitor
     private val mainHandler = Handler(Looper.getMainLooper())
-    private const val NOTIFICATION_CHANNEL_ID = "socket_service_channel"
-    private const val NOTIFICATION_ID = 101
 
     // Socket events
     private const val EVENT_MESSAGE = "onMessageReceived"
     private const val EVENT_REGISTERED = "registered"
-
-    private val PREFS_FILE: String = "device_uuid.xml"
-    private val PREFS_UUID: String = "device_uuid"
     private const val RECONNECT_DELAY = 5000L // 5 seconds
     private var reconnectAttempts = 0
     private const val MAX_RECONNECT_ATTEMPTS = 5
@@ -133,11 +127,6 @@ object SocketManager {
     }
 
     fun disconnect() {
-//        try {
-//            Log.i("SocketManager", "Socket disconnected isInitialized ${::socket.isInitialized} isConnected: ${socket.connected()} ReConnectin in ${RECONNECT_DELAY * (reconnectAttempts * reconnectAttempts)}")
-//        }catch (e:Exception){
-//            Log.e("SocketManager", "Socket disconnected Exception: ${e.printStackTrace()}")
-//        }
         if (::socket.isInitialized && socket.connected()) {
             removeSocketListeners()
             socket.disconnect()
@@ -185,17 +174,6 @@ object SocketManager {
             socket.emit("onClicked", json)
         }
         Log.d("Notification_SocketIO", "CLICK JSON: ${intent.hasExtra("from")}")
-//        if (intent.hasExtra("from") && intent.getStringExtra("from") == "notification") {
-//            mainHandler.post {
-//                val notificationId = intent.getStringExtra("notification_id")
-//                val json = JSONObject().apply { put("notificationId", notificationId) }
-//                Log.d("Notification_SocketIO", "CLICK JSON: ${json}")
-//                socket.emit("onClicked", json)
-//            }
-//            Log.d("Notification_SocketIO", "CLICK JSON: ${intent.hasExtra("from")}")
-//        }else{
-//            Log.d("Notification_SocketIO", "CLICK: ${intent.hasExtra("from")}")
-//        }
     }
 
     fun handleNotificationDismissedIntent(intent: Intent) {

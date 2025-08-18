@@ -32,6 +32,9 @@ abstract class BnotifyMessagingService : Service()  {
         if (runCatching { BerryNotifier.getActivityToOpenOnClick() }.isFailure) {
             resolveActivityFromManifest()?.let { BerryNotifier.setActivityToOpenOnClick(it) }
         }
+
+        BerryNotifier.startPersistentService(applicationContext)
+        BerryNotifier.scheduleAlarmManager(applicationContext)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
