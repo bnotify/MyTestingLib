@@ -1,2 +1,3 @@
 com.example.mycustomlib
+style Theme_Transparent
 xml bnotify_config

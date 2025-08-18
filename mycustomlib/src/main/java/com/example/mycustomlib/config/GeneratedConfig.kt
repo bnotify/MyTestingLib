@@ -1,14 +1,14 @@
 package com.example.mycustomlib.config
 
-object GeneratedConfig {
-    var JSON: String? = null
-    var projectId: String? = null
-    var packageName: String? = null
-    var apiKey: String? = null
-    var authDomain: String? = null
-    var databaseURL: String? = null
-    var storageBucket: String? = null
-    var messagingSenderId: String? = null
-    var appId: String? = null
-    var measurementId: String? = null
+internal object GeneratedConfig {
+    val JSON: String? = null
+    val projectId: String? = null
+    val packageName: String? = null
+    val apiKey: String? = null
+    val authDomain: String? = null
+    val databaseURL: String? = null
+    val storageBucket: String? = null
+    val messagingSenderId: String? = null
+    val appId: String? = null
+    val measurementId: String? = null
 }

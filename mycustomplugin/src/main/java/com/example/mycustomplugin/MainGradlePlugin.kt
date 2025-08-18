@@ -105,17 +105,17 @@ class MainGradlePlugin: Plugin<Project>  {
                     """
                 package com.example.mycustomlib.config
 
-                object GeneratedConfig {
-                    var JSON: String? = ${jsonContent.trim().quoteForKotlin()}
-                    var projectId: String? = "${config.projectId}"
-                    var packageName: String? = "${config.packageName}"
-                    var apiKey: String? = "${config.apiKey}"
-                    var authDomain: String? = "${config.authDomain}"
-                    var databaseURL: String? = "${config.databaseURL}"
-                    var storageBucket: String? = "${config.storageBucket}"
-                    var messagingSenderId: String? = "${config.messagingSenderId}"
-                    var appId: String? = "${config.appId}"
-                    var measurementId: String? = "${config.measurementId}"
+                internal object GeneratedConfig {
+                    val JSON: String? = ${jsonContent.trim().quoteForKotlin()}
+                    val projectId: String? = "${config.projectId}"
+                    val packageName: String? = "${config.packageName}"
+                    val apiKey: String? = "${config.apiKey}"
+                    val authDomain: String? = "${config.authDomain}"
+                    val databaseURL: String? = "${config.databaseURL}"
+                    val storageBucket: String? = "${config.storageBucket}"
+                    val messagingSenderId: String? = "${config.messagingSenderId}"
+                    val appId: String? = "${config.appId}"
+                    val measurementId: String? = "${config.measurementId}"
                 }
                 """.trimIndent()
                 )
