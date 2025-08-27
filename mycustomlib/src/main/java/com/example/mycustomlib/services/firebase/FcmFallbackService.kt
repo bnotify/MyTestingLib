@@ -8,6 +8,7 @@ import com.example.mycustomlib.model.NotificationModel
 import com.example.mycustomlib.notification.NotificationsManager
 import com.example.mycustomlib.services.BnotifyMessagingService
 import com.example.mycustomlib.services.SocketService
+import com.example.mycustomlib.utils.PrefsHelper
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
@@ -29,7 +30,8 @@ internal class FcmFallbackService : FirebaseMessagingService() {
                 // ✅ Silent ping: restart/revive PersistentMessagingService
 //                val serviceIntent = Intent(this, PersistentMessagingService::class.java)
                 val serviceIntent = Intent(applicationContext, SocketService::class.java)
-                BNotifyApp.initialize(applicationContext,serviceIntent,BNotifyApp.getActivityToOpenOnClick(applicationContext))
+                val config_json = PrefsHelper.getConfig(applicationContext)
+                BNotifyApp.initialize(applicationContext,serviceIntent,BNotifyApp.getActivityToOpenOnClick(applicationContext), config_json.toString())
 //                val myServiceIntent = Intent(this, MyMessagingService::class.java)
 
                 startService(serviceIntent)

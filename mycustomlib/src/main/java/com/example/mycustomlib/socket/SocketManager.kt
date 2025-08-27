@@ -18,7 +18,6 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import com.example.mycustomlib.BNotifyApp
 import com.example.mycustomlib.activity.PermissionRequestActivity
-import com.example.mycustomlib.config.GeneratedConfig
 import com.example.mycustomlib.model.BnotifyConfig
 import com.example.mycustomlib.model.NotificationModel
 import com.example.mycustomlib.network.NetworkMonitor
@@ -290,7 +289,8 @@ internal object SocketManager {
         }
 
         val (versionCode, versionName) = getAppVersionInfo(appContext)
-        var configs: BnotifyConfig = BNotifyApp.readBNotifyConfig()!!
+        val config_json = PrefsHelper.getConfig(appContext)
+        var configs: BnotifyConfig = BNotifyApp.readBNotifyConfig(config_json.toString())!!
 
         return listOf(
             "ip=${ipFinderResponse.data?.ip_data?.ip_address}",

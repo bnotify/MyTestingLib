@@ -3,7 +3,7 @@
   "component": {
     "group": "com.github.bnotify",
     "module": "mycustomplugin",
-    "version": "1.2.8",
+    "version": "1.2.9",
     "attributes": {
       "org.gradle.status": "release"
     }
@@ -27,13 +27,13 @@
       },
       "files": [
         {
-          "name": "mycustomplugin-1.2.8.jar",
-          "url": "mycustomplugin-1.2.8.jar",
+          "name": "mycustomplugin-1.2.9.jar",
+          "url": "mycustomplugin-1.2.9.jar",
           "size": 17824,
-          "sha512": "fa02d240a67cd2a70a08dc067de2f7f6795a660abb22815dd62d4d8c18b08f577ac4835d24b41c48fe3ac732e05028a5af520c0c4eb209385d14b3824a02b648",
-          "sha256": "dbff149b516f557bd5e4ae774eb61ada1f937e421df910ff6ee33921a7375fc4",
-          "sha1": "933e345fb12a616ca513161d6ddd0673affc7aa5",
-          "md5": "55a2a8d94cdb6f8b10e467af0b115095"
+          "sha512": "75c5694356e1f574b994fa478899281e53238dc1939141ca2151d3cf97d3daffcabd3a8ceeb5cd8653f17d2d12e0ab3eefc15019a70096a923e2983a0d3bf35b",
+          "sha256": "a4e2aa00cbc20bdb53d1ddd9d4899c977b840e1fa4519d7efe1a097338dd4b83",
+          "sha1": "0c8395829fac744fdc078fae8ba55a41e56b9ff9",
+          "md5": "2911425c9fe2aa0c064e34c120748f69"
         }
       ]
     },
@@ -86,13 +86,13 @@
       ],
       "files": [
         {
-          "name": "mycustomplugin-1.2.8.jar",
-          "url": "mycustomplugin-1.2.8.jar",
+          "name": "mycustomplugin-1.2.9.jar",
+          "url": "mycustomplugin-1.2.9.jar",
           "size": 17824,
-          "sha512": "fa02d240a67cd2a70a08dc067de2f7f6795a660abb22815dd62d4d8c18b08f577ac4835d24b41c48fe3ac732e05028a5af520c0c4eb209385d14b3824a02b648",
-          "sha256": "dbff149b516f557bd5e4ae774eb61ada1f937e421df910ff6ee33921a7375fc4",
-          "sha1": "933e345fb12a616ca513161d6ddd0673affc7aa5",
-          "md5": "55a2a8d94cdb6f8b10e467af0b115095"
+          "sha512": "75c5694356e1f574b994fa478899281e53238dc1939141ca2151d3cf97d3daffcabd3a8ceeb5cd8653f17d2d12e0ab3eefc15019a70096a923e2983a0d3bf35b",
+          "sha256": "a4e2aa00cbc20bdb53d1ddd9d4899c977b840e1fa4519d7efe1a097338dd4b83",
+          "sha1": "0c8395829fac744fdc078fae8ba55a41e56b9ff9",
+          "md5": "2911425c9fe2aa0c064e34c120748f69"
         }
       ]
     }
