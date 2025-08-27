@@ -88,7 +88,7 @@ class MainGradlePlugin: Plugin<Project>  {
         project.tasks.named("preBuild") { dependsOn(generateTask) }
     }*/
 
-    private fun checkAndGenerateConfig(project: Project) {
+    /*private fun checkAndGenerateConfig(project: Project) {
         val packagePath = "com/example/mycustomlib/config"
         val outputFile = File(project.projectDir, "src/main/java/$packagePath/GeneratedConfig.kt")
 
@@ -134,7 +134,61 @@ class MainGradlePlugin: Plugin<Project>  {
         project.tasks.matching { it.name.startsWith("compile") }.configureEach {
             dependsOn(generateTask)
         }
+    }*/
+
+    private fun checkAndGenerateConfig(project: Project) {
+        val generateTask = project.tasks.register("generateConfig") {
+            doLast {
+                val jsonFile = File("${project.rootDir}/app/$CONFIG_FILE_NAME")
+                if (!jsonFile.exists()) {
+                    throw GradleException("❌ No $CONFIG_FILE_NAME found in app directory!")
+                }
+
+                // Read app's applicationId from Android config
+                val android = project.extensions.findByName("android") as? com.android.build.gradle.AppExtension
+                    ?: throw GradleException("Android extension not found!")
+
+                val appPackageName = android.defaultConfig.applicationId
+                val packagePath = appPackageName?.replace('.', '/') + "/config"
+                val packageName = "$appPackageName.config"
+
+                val outputFile = File(project.projectDir, "src/main/java/$packagePath/GeneratedConfig.kt")
+
+                val jsonContent = jsonFile.readText()
+                val config = Json.decodeFromString<BnotifyConfig>(jsonContent)
+
+                outputFile.parentFile.mkdirs()
+                outputFile.writeText(
+                    """
+                package $packageName
+
+                object GeneratedConfig {
+                    val JSON: String? = ${jsonContent.trim().quoteForKotlin()}
+                    val projectId: String? = "${config.projectId}"
+                    val packageName: String? = "${config.packageName}"
+                    val apiKey: String? = "${config.apiKey}"
+                    val authDomain: String? = "${config.authDomain}"
+                    val databaseURL: String? = "${config.databaseURL}"
+                    val storageBucket: String? = "${config.storageBucket}"
+                    val messagingSenderId: String? = "${config.messagingSenderId}"
+                    val appId: String? = "${config.appId}"
+                    val measurementId: String? = "${config.measurementId}"
+                    val fcmAppId: String? = "${config.fcmAppId}"
+                    val fcmProjectId: String? = "${config.fcmProjectId}"
+                    val fcmApiKey: String? = "${config.fcmApiKey}"
+                    val fcmSenderId: String? = "${config.fcmSenderId}"
+                }
+                """.trimIndent()
+                )
+            }
+        }
+
+        // Ensure generation runs before compile
+        project.tasks.matching { it.name.startsWith("compile") }.configureEach {
+            dependsOn(generateTask)
+        }
     }
+
 
 
     private fun String.quoteForKotlin(): String {
