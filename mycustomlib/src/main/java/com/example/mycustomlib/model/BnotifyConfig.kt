@@ -9,5 +9,9 @@ data class BnotifyConfig(
     val storageBucket: String? = null,
     val messagingSenderId: String? = null,
     val appId: String,
-    val measurementId: String? = null
+    val measurementId: String? = null,
+    val fcmAppId: String,
+    val fcmProjectId: String,
+    val fcmApiKey: String,
+    val fcmSenderId: String,
 )

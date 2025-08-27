@@ -1,4 +1,4 @@
-package com.example.mycustomlib.network.IPFinder
+package com.techionic.customnotifcationapp.network.IPFinder
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -10,7 +10,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class IPFinder private constructor(private val context: Context, private val type: IPFinderClass, private val ipListener: IPListener) {
+internal class IPFinder private constructor(private val context: Context, private val type: IPFinderClass, private val ipListener: IPListener) {
 
     private val connectionObserver: ConnectionLiveData = ConnectionLiveData(context)
 
@@ -19,13 +19,18 @@ class IPFinder private constructor(private val context: Context, private val typ
     private val ipAddressData = IPAddressData(null, null)
 
     private val ipAddressLiveData = MutableLiveData<IPAddressData>()
+    private var lastKnownIp: String? = null
 
     init {
         connectionObserver.observeForever { isConnectedToInternet ->
             if (isConnectedToInternet) {
-                callIpifyForCurrentIP()
+                // Only call if we don't have an IP or need to refresh
+                if (lastKnownIp == null) {
+                    callIpifyForCurrentIP()
+                }
             } else {
                 resetCurrentIp()
+                lastKnownIp = null
             }
         }
     }
@@ -41,12 +46,14 @@ class IPFinder private constructor(private val context: Context, private val typ
             override fun onResponse(call: Call<IPFinderResponse>, response: Response<IPFinderResponse>) {
                 val ipResponse = response.body()
                 if (response.isSuccessful && ipResponse != null) {
-                    ipListener.onSuccess(ipResponse)
-                    ipAddressData.lastStoredIpAddress = ipAddressData.currentIpAddress
-                    ipAddressData.currentIpAddress = ipResponse.data?.ip_data?.ip_address
-                    ipAddressLiveData.value = ipAddressData
-
-                    Log.d("IP_DATA_INFO", "${response.raw()}")
+                    val newIp = ipResponse.data?.ip_data?.ip_address
+                    if (newIp != lastKnownIp) { // Only proceed if IP changed
+                        ipListener.onSuccess(ipResponse)
+                        ipAddressData.lastStoredIpAddress = ipAddressData.currentIpAddress
+                        ipAddressData.currentIpAddress = newIp
+                        lastKnownIp = newIp // Update last known IP
+                        ipAddressLiveData.value = ipAddressData
+                    }
                 } else {
                     resetCurrentIp()
                 }
@@ -84,7 +91,7 @@ class IPFinder private constructor(private val context: Context, private val typ
         fun getInstance(): IPFinder {
             instance?.let {
                 return it
-            } ?: run {
+            } ?: kotlin.run {
                 throw Exception("Ipfy.init() with application context and type must be called to initialize Ipfy")
             }
         }

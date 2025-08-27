@@ -11,13 +11,6 @@ android {
     defaultConfig {
         minSdk = 24
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        targetSdk?.let {
-            if (it >= 33) {
-                manifestPlaceholders["exactAlarmPermission"] = "android.permission.USE_EXACT_ALARM"
-            } else {
-                manifestPlaceholders["exactAlarmPermission"] = ""
-            }
-        }
     }
 
     compileOptions {
@@ -45,7 +38,7 @@ publishing {
         create<MavenPublication>("release") {
             groupId = "com.github.bnotify"
             artifactId = "mycustomlib"
-            version = "1.2.5"
+            version = "1.2.6"
 
             afterEvaluate {
                 from(components["release"])
@@ -66,19 +59,25 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation(libs.kotlinx.serialization.json)
-    //Image processing libraray
-    implementation(libs.glide)
-    annotationProcessor(libs.compiler)
-    implementation(libs.okhttp3.integration)
 
-    //http request library
-    implementation(libs.okhttp)
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-    //socket request library
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+    implementation("com.github.bumptech.glide:okhttp3-integration:4.16.0")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation("io.socket:socket.io-client:2.1.0") {
         // Excluding org.json which conflicts with Android's built-in org.json
         exclude("org.json","json");
     }
+
+    // Firebase Messaging (no google-services plugin required)
+    implementation(platform("com.google.firebase:firebase-bom:34.1.0"))
+    implementation("com.google.firebase:firebase-messaging")       // Use main module
+    implementation("com.google.firebase:firebase-installations")   // Use main module
+    // WorkManager (Kotlin + coroutines support)
+    implementation("androidx.work:work-runtime-ktx:2.10.3")
 }

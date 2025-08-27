@@ -7,9 +7,12 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import androidx.annotation.RequiresApi
+import kotlin.also
+import kotlin.collections.forEach
+import kotlin.run
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-class NetworkMonitor private constructor(context: Context) : ConnectivityManager.NetworkCallback() {
+internal class NetworkMonitor private constructor(context: Context) : ConnectivityManager.NetworkCallback() {
 
     private val connectivityManager: ConnectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

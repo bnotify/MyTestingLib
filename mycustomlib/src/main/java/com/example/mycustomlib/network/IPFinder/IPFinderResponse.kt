@@ -1,8 +1,8 @@
-package com.example.mycustomlib.network.IPFinder
+package com.techionic.customnotifcationapp.network.IPFinder
 
 import com.google.gson.annotations.SerializedName
 
-class IPFinderResponse {
+internal class IPFinderResponse {
     @SerializedName("data")
     var data: Data? = null
 

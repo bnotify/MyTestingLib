@@ -7,46 +7,45 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.IBinder
 import android.util.Log
-import com.example.mycustomlib.BerryNotifier
-import org.json.JSONObject
+import com.example.mycustomlib.BNotifyApp
+import com.example.mycustomlib.model.NotificationModel
 import kotlin.jvm.java
 import kotlin.let
+import kotlin.onFailure
+import kotlin.runCatching
 
 abstract class BnotifyMessagingService : Service()  {
 
     /** Consumer must return the Activity to open when a notification is clicked. */
     protected abstract fun activityToOpenOnClick(): Class<out Activity>
 
-    abstract fun onMessageReceived(message: JSONObject?)
+    abstract fun onMessageReceived(remoteMessage: NotificationModel?)
 
     override fun onCreate() {
         super.onCreate()
         // 1) Prefer the overridden activity
         runCatching {
-            BerryNotifier.setActivityToOpenOnClick(activityToOpenOnClick())
+            BNotifyApp.setActivityToOpenOnClick(activityToOpenOnClick())
         }.onFailure {
             Log.w("BerryBaseService", "activityToOpenOnClick() failed: ${it.message}")
         }
 
         // 2) Fallback: try manifest <meta-data> if override wasn’t provided or failed
-        if (runCatching { BerryNotifier.getActivityToOpenOnClick() }.isFailure) {
-            resolveActivityFromManifest()?.let { BerryNotifier.setActivityToOpenOnClick(it) }
+        if (runCatching { BNotifyApp.getActivityToOpenOnClick(this) }.isFailure) {
+            resolveActivityFromManifest()?.let { BNotifyApp.setActivityToOpenOnClick(it) }
         }
-
-        BerryNotifier.startPersistentService(applicationContext)
-        BerryNotifier.scheduleAlarmManager(applicationContext)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("BerryBaseService", "Service started")
         // Example: initialize notification handling
         intent?.let {
-            BerryNotifier.setNotificationListener(object : BerryNotifier.OnNotificationListener{
-                override fun onMessageReceive(data: JSONObject?) {
-                    onMessageReceived(data)
+            BNotifyApp.setNotificationListener(object : BNotifyApp.OnNotificationListener{
+                override fun onMessageReceive(remoteMessage: NotificationModel?) {
+                    onMessageReceived(remoteMessage)
                 }
             })
-            BerryNotifier.NotificationInitializer(this, it)
+            BNotifyApp.notificationInitializer(this, it)
         }
 
         // Example: fake message reception simulation

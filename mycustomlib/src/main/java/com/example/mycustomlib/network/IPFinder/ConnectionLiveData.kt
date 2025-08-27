@@ -1,4 +1,4 @@
-package com.example.mycustomlib.network.IPFinder
+package com.techionic.customnotifcationapp.network.IPFinder
 
 import android.annotation.SuppressLint
 import android.annotation.TargetApi

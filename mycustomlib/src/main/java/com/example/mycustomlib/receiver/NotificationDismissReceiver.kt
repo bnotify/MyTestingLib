@@ -6,7 +6,7 @@ import android.content.Intent
 import android.util.Log
 import com.example.mycustomlib.socket.SocketManager
 
-class NotificationDismissReceiver : BroadcastReceiver() {
+internal class NotificationDismissReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val notificationId = intent.extras?.get("notification_id")
         val action = intent.getStringExtra("action")

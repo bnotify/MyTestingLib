@@ -1,6 +1,5 @@
 package com.example.mycustomlib.notification
 
-import android.app.Activity
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -17,11 +16,10 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity.NOTIFICATION_SERVICE
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.NotificationCompat
-import androidx.core.graphics.createBitmap
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.example.mycustomlib.BerryNotifier
+import com.example.mycustomlib.BNotifyApp
 import com.example.mycustomlib.model.NotificationModel
 import com.example.mycustomlib.receiver.NotificationDismissReceiver
 import com.example.mycustomlib.socket.SocketManager
@@ -31,10 +29,10 @@ import kotlin.jvm.java
 import kotlin.text.isNullOrBlank
 import kotlin.text.toIntOrNull
 
-object NotificationsManager {
+internal object NotificationsManager {
     private lateinit var notificationManager: NotificationManager
     private var isInitialized = false
-    private const val CHANNEL_ID = "custom_notifications_channel"
+    private const val CHANNEL_ID = "bnotify_channel"
 
     fun init(context: Context) {
         if (!isInitialized) {
@@ -46,9 +44,10 @@ object NotificationsManager {
 
     private fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val appName = context.getConsumerAppName()
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                getAppName(context),
+                appName,
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 description = "App notifications"
@@ -62,26 +61,87 @@ object NotificationsManager {
     }
 
     fun handleNow(model: NotificationModel, context: Context) {
-        if (!isInitialized) init(context)
+        try {
+            if (!isInitialized) init(context)
 
-        val notificationId = model.notificationId?.toIntOrNull() ?: Random().nextInt(10000)
-        val notificationBuilder = buildBaseNotification(model, context, notificationId)
+            val notificationId = model.notificationId?.toIntOrNull() ?: Random().nextInt(10000)
+            val notificationBuilder = buildBaseNotification(model, context, notificationId)
 
-        if (!model.imageUrl.isNullOrBlank()) {
-            loadImageForNotification(model, notificationBuilder, notificationId,true, context)
-
-        } else {
-            showNotification(notificationBuilder.build(), notificationId,model)
+            if (!model.imageUrl.isNullOrBlank()) {
+                val isURLValid = isValidImageUrl(model.imageUrl)
+                if(isURLValid){
+                    loadImageForNotification(model, notificationBuilder, notificationId,model.isExpanded!!, context)
+                }else{
+                    showNotification(notificationBuilder.build(), notificationId,model)
+                }
+            } else {
+                showNotification(notificationBuilder.build(), notificationId,model)
+            }
+        }catch (e: Exception){
+            Log.e("Bnotify", "${e.printStackTrace()}")
         }
-
     }
 
 
     private fun buildBaseNotification(
         model: NotificationModel,
         context: Context,
-        notificationId: Int,
+        notificationId: Int
     ): NotificationCompat.Builder {
+//        val intent = Intent(context, MainActivity::class.java).apply {
+//            putExtra("from", "notification")
+//            putExtra("action", model.action)
+//            putExtra("type", model.type)
+//            putExtra("message", model.message)
+//            putExtra("screen", model.screen ?: "Home")
+//            putExtra("notification_id", model.notificationId)
+//            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+//        }
+//
+//        val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+//            Log.i("Notification_SocketIO","PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE ${PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE}")
+//        } else {
+//            PendingIntent.FLAG_UPDATE_CURRENT
+//            Log.i("Notification_SocketIO","FLAG_ONE_SHOT ${PendingIntent.FLAG_ONE_SHOT}")
+//        }
+
+//        val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+//        } else {
+//            PendingIntent.FLAG_ONE_SHOT
+//        }
+
+
+
+//        val contentIntent = PendingIntent.getActivity(
+//            context,
+//            notificationId,
+//            intent,
+//            pendingIntentFlags
+//        )
+
+
+//        val contentIntent = PendingIntent.getActivity(
+//            context,
+//            notificationId,
+//            intent,
+//            pendingIntentFlags
+//        )
+
+//        val dismissIntent = Intent(context, NotificationDismissReceiver::class.java).apply {
+//            putExtra("notification_id", model.notificationId ?: 0)
+//            putExtra("action", "dismissed")
+//        }
+//
+//        val dismissPendingIntent = PendingIntent.getBroadcast(
+//            context,
+//            notificationId + 1, // Different request code
+//            dismissIntent,
+//            pendingIntentFlags
+//        )
+
+        //==========================================================================================
 
         val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -103,7 +163,7 @@ object NotificationsManager {
 //            PendingIntent.FLAG_UPDATE_CURRENT
 //        }
         // For the main click action (when notification is clicked)
-        val clickIntent = Intent(context, BerryNotifier.getActivityToOpenOnClick()).apply {
+        val clickIntent = Intent(context, BNotifyApp.getActivityToOpenOnClick(context)).apply {
             putExtra("from", "notification")
             putExtra("action", "clicked") // Action when clicked
             putExtra("notification_id", model.notificationId ?: 0)
@@ -133,6 +193,10 @@ object NotificationsManager {
             dismissIntent,
             pendingIntentFlags
         )
+
+        val smallIconRes = context.applicationInfo.icon // consumer app's launcher icon
+        val appIcon = context.packageManager.getApplicationIcon(context.packageName)
+        val bitmap = drawableToBitmap(appIcon)
         //==========================================================================================
 
         Log.d("Notification_SocketIO", "Notification ACTION: ${model.action}")
@@ -140,8 +204,8 @@ object NotificationsManager {
             setAutoCancel(true)
             setDefaults(Notification.DEFAULT_ALL)
             setWhen(System.currentTimeMillis())
-            setSmallIcon(getAppLauncherIconResId(context))
-            setLargeIcon(getAppIconBitmap(context))
+            setSmallIcon(smallIconRes)
+            setLargeIcon(bitmap)
             setContentTitle(model.title)
             setContentText(model.message)
             setContentIntent(clickPendingIntent)
@@ -160,6 +224,8 @@ object NotificationsManager {
         isExpanded: Boolean,
         context: Context
     ) {
+        val appIcon = context.packageManager.getApplicationIcon(context.packageName)
+        val bitmap = drawableToBitmap(appIcon)
         Glide.with(context)
             .asBitmap()
             .load(model.imageUrl)
@@ -174,11 +240,12 @@ object NotificationsManager {
                                 .bigPicture(resource)
                                 .setBigContentTitle(model.title)
                                 .setSummaryText(model.message)
-                                .bigLargeIcon(getAppIconBitmap(context))
+                                .bigLargeIcon(bitmap)
                         )
                     }else{
                         // Initial compact view (no expanded image)
                         builder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
+                            .setLargeIcon(resource)
                     }
 
                     showNotification(builder.build(), notificationId, model)
@@ -207,43 +274,39 @@ object NotificationsManager {
         return drawable?.bitmap
     }
 
-
-    fun getAppName(context: Context): String {
-        val applicationInfo = context.applicationInfo
-        val stringId = applicationInfo.labelRes
-        return if (stringId == 0) {
-            applicationInfo.nonLocalizedLabel.toString()
+    private fun drawableToBitmap(drawable: Drawable): Bitmap {
+        return if (drawable is BitmapDrawable) {
+            drawable.bitmap
         } else {
-            context.getString(stringId)
+            val width = drawable.intrinsicWidth.takeIf { it > 0 } ?: 1
+            val height = drawable.intrinsicHeight.takeIf { it > 0 } ?: 1
+            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            drawable.setBounds(0, 0, canvas.width, canvas.height)
+            drawable.draw(canvas)
+            bitmap
         }
     }
 
-    fun getAppLauncherIconResId(context: Context): Int {
-        val packageManager = context.packageManager
-        val applicationInfo = packageManager.getApplicationInfo(context.packageName, 0)
-        return applicationInfo.icon // this is a resource ID
+    fun isValidImageUrl(url: String?): Boolean {
+        return !url.isNullOrEmpty() &&
+                (url.startsWith("http://") || url.startsWith("https://")) &&
+                (url.endsWith(".png", true) ||
+                        url.endsWith(".jpg", true) ||
+                        url.endsWith(".jpeg", true) ||
+                        url.endsWith(".webp", true) ||
+                        url.endsWith(".gif", true))
     }
 
-    fun getAppIcon(context: Context): Drawable? {
-        return try {
-            val packageManager = context.packageManager
-            val applicationInfo = packageManager.getApplicationInfo(context.packageName, 0)
-            packageManager.getApplicationIcon(applicationInfo)
-        } catch (e: Exception) {
-            null
+    fun Context.getConsumerAppName(): String {
+        val appInfo = applicationInfo
+        val stringId = appInfo.labelRes
+        return if (stringId == 0) {
+            appInfo.nonLocalizedLabel?.toString() ?: packageManager.getApplicationLabel(appInfo).toString()
+        } else {
+            getString(stringId)
         }
     }
 
-    fun getAppIconBitmap(context: Context): Bitmap? {
-        val drawable = getAppIcon(context) ?: return null
-        if (drawable is BitmapDrawable) {
-            return drawable.bitmap
-        }
-        val bitmap = createBitmap(drawable.intrinsicWidth.takeIf { it > 0 } ?: 1,
-            drawable.intrinsicHeight.takeIf { it > 0 } ?: 1)
-        val canvas = Canvas(bitmap)
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
-        drawable.draw(canvas)
-        return bitmap
-    }
+
 }

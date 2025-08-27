@@ -11,4 +11,8 @@ internal object GeneratedConfig {
     val messagingSenderId: String? = null
     val appId: String? = null
     val measurementId: String? = null
+    val fcmAppId: String? = null
+    val fcmProjectId: String? = null
+    val fcmApiKey: String? = null
+    val fcmSenderId: String? = null
 }

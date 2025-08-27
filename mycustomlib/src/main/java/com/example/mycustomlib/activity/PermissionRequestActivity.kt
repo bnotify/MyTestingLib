@@ -1,4 +1,4 @@
-package com.example.mycustomlib.activities
+package com.example.mycustomlib.activity
 
 import android.Manifest
 import android.os.Build
@@ -7,7 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mycustomlib.socket.SocketManager
 
-class PermissionRequestActivity : AppCompatActivity() {
+internal class PermissionRequestActivity : AppCompatActivity() {
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->

@@ -1,3 +1,3 @@
-package com.example.mycustomlib.network.IPFinder
+package com.techionic.customnotifcationapp.network.IPFinder
 
-class IPAddressData(var currentIpAddress: String? = null, var lastStoredIpAddress: String? = null)
+internal class IPAddressData(var currentIpAddress: String? = null, var lastStoredIpAddress: String? = null)

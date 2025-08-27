@@ -4,9 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
@@ -17,19 +15,19 @@ import android.provider.Settings
 import android.telephony.TelephonyManager
 import android.util.DisplayMetrics
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.core.content.ContextCompat
-import com.example.mycustomlib.activities.PermissionRequestActivity
+import com.example.mycustomlib.BNotifyApp
+import com.example.mycustomlib.activity.PermissionRequestActivity
 import com.example.mycustomlib.config.GeneratedConfig
 import com.example.mycustomlib.model.BnotifyConfig
 import com.example.mycustomlib.model.NotificationModel
-import com.example.mycustomlib.network.IPFinder.IPFinder
-import com.example.mycustomlib.network.IPFinder.IPFinderClass
-import com.example.mycustomlib.network.IPFinder.IPFinderResponse
 import com.example.mycustomlib.network.NetworkMonitor
 import com.example.mycustomlib.notification.NotificationsManager
-import com.example.mycustomlib.services.PersistentMessagingService
+import com.example.mycustomlib.utils.PrefsHelper
 import com.google.gson.Gson
+import com.techionic.customnotifcationapp.network.IPFinder.IPFinder
+import com.techionic.customnotifcationapp.network.IPFinder.IPFinderClass
+import com.techionic.customnotifcationapp.network.IPFinder.IPFinderResponse
 import io.socket.client.IO
 import io.socket.client.Socket
 import org.json.JSONObject
@@ -37,7 +35,12 @@ import java.io.RandomAccessFile
 import java.net.InetAddress
 import java.net.NetworkInterface
 import java.security.MessageDigest
-import java.util.*
+import java.util.Collections
+import java.util.LinkedList
+import java.util.Locale
+import java.util.Queue
+import java.util.TimeZone
+import java.util.UUID
 import java.util.regex.Pattern
 import kotlin.apply
 import kotlin.collections.isNotEmpty
@@ -56,37 +59,49 @@ import kotlin.text.toLong
 import kotlin.text.uppercase
 import kotlin.to
 
-object SocketManager {
-    private val host = "wss://bnotify.convexinteractive.com"  // Live Server IP
-//    private val host = "wss://d82f0f95ae89.ngrok-free.app"  // Server IP
+internal object SocketManager {
+    private val host = "wss://bnotify.convexinteractive.com:4433"  // Live Server IP
+//        private val host = "wss://b88ac9dca6d6.ngrok-free.app"  // Server IP
     private val port = 3000
     private lateinit var socket: Socket
-    private lateinit var appContext: Context
+    internal lateinit var appContext: Context
+    private lateinit var networkMonitor: NetworkMonitor
     private val mainHandler = Handler(Looper.getMainLooper())
+    private const val NOTIFICATION_CHANNEL_ID = "socket_service_channel"
+    private const val NOTIFICATION_ID = 101
 
     // Socket events
     private const val EVENT_MESSAGE = "onMessageReceived"
     private const val EVENT_REGISTERED = "registered"
+
+    private val PREFS_FILE: String = "device_uuid.xml"
+    private val PREFS_UUID: String = "device_uuid"
     private const val RECONNECT_DELAY = 5000L // 5 seconds
     private var reconnectAttempts = 0
     private const val MAX_RECONNECT_ATTEMPTS = 5
     private var isConnectionInProgress = false
     private const val PERMISSION_REQUEST_CODE = 1001
 
+    internal var FCM_TOKEN: String = ""
+
+    // Queue to hold pending events until socket connects
+    private val pendingEvents: Queue<Pair<String, JSONObject>> = LinkedList()
+
     fun initialize(context: Context) {
         appContext = context.applicationContext
     }
 
     fun connect() {
+        Log.d("IP_DATA_INFO", "Socket connect method")
         IPFinder.init(appContext, IPFinderClass.UniversalIP, object : IPFinder.IPListener{
             override fun onSuccess(ipFinderResponse: IPFinderResponse) {
                 var response: String = Gson().toJson(ipFinderResponse)
-                Log.e("SocketManager", "IPFinderResponse: ${response}")
+                Log.e("IP_DATA_INFO", "IPFinderResponse: ${response}")
                 connectSocket(ipFinderResponse)
             }
 
             override fun onError(error: String) {
-                Log.e("SocketManager", "IPFinder error: ${error}")
+//                Log.e("SocketManager", "IPFinder error: ${error}")
                 val model = IPFinderResponse()
                 val dataModel = IPFinderResponse.Data()
                 val ipDataModel = IPFinderResponse.Data.IPData()
@@ -127,10 +142,16 @@ object SocketManager {
     }
 
     fun disconnect() {
+//        try {
+//            Log.i("SocketManager", "Socket disconnected isInitialized ${::socket.isInitialized} isConnected: ${socket.connected()} ReConnectin in ${RECONNECT_DELAY * (reconnectAttempts * reconnectAttempts)}")
+//        }catch (e:Exception){
+//            Log.e("SocketManager", "Socket disconnected Exception: ${e.printStackTrace()}")
+//        }
         if (::socket.isInitialized && socket.connected()) {
             removeSocketListeners()
             socket.disconnect()
             isConnectionInProgress = false
+            Log.e("SocketManager", "Socket disconnected ")
         }
     }
 
@@ -141,11 +162,11 @@ object SocketManager {
 
         if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
             Log.i("SocketManager", "Max reconnect ${MAX_RECONNECT_ATTEMPTS}, attempts reached ${reconnectAttempts} - restarting service")
-            mainHandler.post {
-                (appContext as? ContextWrapper)?.baseContext?.let {
-                    PersistentMessagingService.restartService(it)
-                }
-            }
+//            mainHandler.post {
+//                (appContext as? ContextWrapper)?.baseContext?.let {
+//                    PersistentMessagingService.restartService(it)
+//                }
+//            }
             reconnectAttempts = 0
             return
         }
@@ -161,17 +182,45 @@ object SocketManager {
         }, delay)
     }
 
-    fun handleNotificationClickedIntent(intent: Intent) {
-        if (!::socket.isInitialized || !socket.connected()) {
-            Log.w("SocketManager", "Socket not initialized or not connected — ignoring click emit")
-            return
+    private fun flushPendingEvents() {
+        while (pendingEvents.isNotEmpty()) {
+            val (event, json) = pendingEvents.poll()
+            socket.emit(event, json)
+            Log.d("SocketManager", "Flushed queued event: $event -> $json")
         }
+    }
+
+    private fun emitOrQueue(event: String, json: JSONObject) {
+        if (::socket.isInitialized && socket.connected()) {
+            socket.emit(event, json)
+            Log.d("SocketManager", "Emitted immediately: $event -> $json")
+        } else {
+            pendingEvents.add(Pair(event, json))
+            Log.w("SocketManager", "Socket not ready, queued: $event -> $json")
+        }
+    }
+
+    fun handleNotificationClickedIntent(intent: Intent) {
+//        if (!::socket.isInitialized || !socket.connected()) {
+//            Log.w("SocketManager", "Socket not initialized or not connected — ignoring click emit")
+//            return
+//        }
+//
+//        mainHandler.post {
+//            val notificationId = intent.getStringExtra("notification_id")
+//            val json = JSONObject().apply { put("notificationId", notificationId) }
+//            Log.d("Notification_SocketIO", "CLICK JSON: ${json}")
+//            socket.emit("onClicked", json)
+//        }
 
         mainHandler.post {
             val notificationId = intent.getStringExtra("notification_id")
-            val json = JSONObject().apply { put("notificationId", notificationId) }
-            Log.d("Notification_SocketIO", "CLICK JSON: ${json}")
-            socket.emit("onClicked", json)
+            val screen = intent.getStringExtra("screen")
+            val json = JSONObject().apply {
+                put("notificationId", notificationId)
+                put("screen", screen)
+            }
+            emitOrQueue("onClicked", json)
         }
         Log.d("Notification_SocketIO", "CLICK JSON: ${intent.hasExtra("from")}")
     }
@@ -181,15 +230,22 @@ object SocketManager {
             val notificationId = intent.getStringExtra("notification_id")
             val json = JSONObject().apply { put("notificationId", notificationId) }
             Log.d("Notification_SocketIO", "Notification JSON: ${json}")
-            socket.emit("onDismissed", json)
+            emitOrQueue("onDismissed", json)
+//            if (::socket.isInitialized && socket.connected()) {
+//                socket.emit("onDismissed", json)
+//            } else {
+//                Log.w("SocketManager", "Socket not initialized or not connected — skipping dismiss emit")
+//            }
         }
     }
 
     fun handleNotificationReceived(model: NotificationModel) {
         mainHandler.post {
+            val obj = Gson().toJson(model)
             val json = JSONObject().apply { put("notificationId", model.notificationId) }
-            Log.d("Notification_SocketIO", "onReceived Notification JSON: ${json}")
-            socket.emit("onReceived", json)
+            Log.d("Notification_SocketIO", "onReceived Notification JSON: ${obj}")
+//            socket.emit("onReceived", json)
+            emitOrQueue("onReceived", json)
         }
     }
 
@@ -222,35 +278,19 @@ object SocketManager {
         return isConnectionInProgress
     }
 
-    fun readBNotifyConfig(): BnotifyConfig? {
-        val json = GeneratedConfig.JSON ?: return null // safe null check
 
-        return try {
-            val jsonObject = JSONObject(json)
-            Log.i("Bnotify", "Extracted DATA: $json")
-
-            BnotifyConfig(
-                projectId = jsonObject.optString("projectId"),
-                packageName = jsonObject.optString("packageName"),
-                apiKey = jsonObject.optString("apiKey"),
-                authDomain = jsonObject.optString("authDomain"),
-                databaseURL = jsonObject.optString("databaseURL"),
-                storageBucket = jsonObject.optString("storageBucket"),
-                messagingSenderId = jsonObject.optString("messagingSenderId"),
-                appId = jsonObject.optString("appId"),
-                measurementId = jsonObject.optString("measurementId")
-            )
-        } catch (e: Exception) {
-            Log.e("Bnotify", "Failed to parse config: ${e.message}")
-            null
-        }
-    }
 
     private fun buildConnectionQuery(ipFinderResponse: IPFinderResponse): String {
+        val token = PrefsHelper.getFcmToken(appContext.applicationContext)
+        if (token != null) {
+            FCM_TOKEN = token
+            Log.d("FCM_TOKEN", "Restored saved token: $token")
+        } else {
+            Log.w("FCM_TOKEN", "No token saved yet")
+        }
 
         val (versionCode, versionName) = getAppVersionInfo(appContext)
-
-        var configs: BnotifyConfig = readBNotifyConfig()!!
+        var configs: BnotifyConfig = BNotifyApp.readBNotifyConfig()!!
 
         return listOf(
             "ip=${ipFinderResponse.data?.ip_data?.ip_address}",
@@ -274,6 +314,7 @@ object SocketManager {
             "uuid=${getPersistentDeviceId(appContext)}",
             "projectId=${configs.projectId}",
             "appId=${configs.appId}",
+            "fcmtoken=${token}",
         ).joinToString("&")
     }
 
@@ -282,6 +323,8 @@ object SocketManager {
             isConnectionInProgress = false
             Log.d("SocketManager", "Connected")
             reconnectAttempts = 0 // Reset counter on successful connection
+            // Flush pending events
+            flushPendingEvents()
         }.on(Socket.EVENT_DISCONNECT) { args ->
             isConnectionInProgress = false
             Log.d("SocketManager", "Disconnected: ${args.joinToString()}")
@@ -312,12 +355,17 @@ object SocketManager {
 
     private fun handleMessage(data: JSONObject?) {
         Log.d("SocketManager", "MESSAGE: ${data}")
+        Log.d("NOTIFY_MESSAGE_DATA", "SOCKET MESSAGE: ${data}")
         data?.let {
             mainHandler.post {
                 // Handle your message here
                 val model: NotificationModel = Gson().fromJson(data.toString(), NotificationModel::class.java)
                 NotificationsManager.init(appContext)
-                NotificationsManager.handleNow(model, appContext)
+                if(BNotifyApp.getIsAutoGeneratedNotification(appContext)){
+                    NotificationsManager.handleNow(model, appContext)
+                }else{
+                    BNotifyApp.getNotificationListener()?.onMessageReceive(model)
+                }
             }
         }
     }
@@ -387,7 +435,7 @@ object SocketManager {
         }
 
         // 3️⃣ Fallback to saved UUID in SharedPreferences
-        val prefs = context.getSharedPreferences("device_id_prefs", MODE_PRIVATE)
+        val prefs = context.getSharedPreferences("device_id_prefs", Context.MODE_PRIVATE)
         var savedId = prefs.getString("device_id", null)
         if (savedId.isNullOrBlank()) {
             savedId = UUID.randomUUID().toString()

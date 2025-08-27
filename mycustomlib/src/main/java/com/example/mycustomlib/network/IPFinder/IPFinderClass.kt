@@ -1,6 +1,6 @@
-package com.example.mycustomlib.network.IPFinder
+package com.techionic.customnotifcationapp.network.IPFinder
 
-enum class IPFinderClass {
+internal enum class IPFinderClass {
     IPv4,
     UniversalIP;
 }

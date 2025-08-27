@@ -3,7 +3,7 @@
   "component": {
     "group": "com.github.bnotify",
     "module": "mycustomplugin",
-    "version": "1.2.5",
+    "version": "1.2.6",
     "attributes": {
       "org.gradle.status": "release"
     }
@@ -27,13 +27,13 @@
       },
       "files": [
         {
-          "name": "mycustomplugin-1.2.5.jar",
-          "url": "mycustomplugin-1.2.5.jar",
-          "size": 16894,
-          "sha512": "8e4a30c8be6e7ac5908e70cec8c01e3295abc052e1af370d7db3fb71913cb47093adda759ea8dd1606f302279d0001b30830cfaed780a4ac10e19863f8fd3793",
-          "sha256": "3d87c4be3dcf4025f85b87a0b5cf60fec154738a84c74806da4b113d3d462ea6",
-          "sha1": "578089af9d30381477202a5804bb192d23b0eb4d",
-          "md5": "de63c4dfb360e531d117fafea9944d0f"
+          "name": "mycustomplugin-1.2.6.jar",
+          "url": "mycustomplugin-1.2.6.jar",
+          "size": 17664,
+          "sha512": "c8e3805d9524891c5a86b38deb74aa5b535b959625d958be4c0c218211853ec5b0911169f053b5ceba1bfea81bb520ac8c55faacea6b8b458042f3fe162c5ce9",
+          "sha256": "a8b7828a83c7c7bc8047f53eb76828143e41ea8243bf8fbefd53cc9c332c9047",
+          "sha1": "82da33d888df8c23ca75e9b80e9f884f5dba2355",
+          "md5": "e7f5becfe2f326000dec4ed414960784"
         }
       ]
     },
@@ -86,13 +86,13 @@
       ],
       "files": [
         {
-          "name": "mycustomplugin-1.2.5.jar",
-          "url": "mycustomplugin-1.2.5.jar",
-          "size": 16894,
-          "sha512": "8e4a30c8be6e7ac5908e70cec8c01e3295abc052e1af370d7db3fb71913cb47093adda759ea8dd1606f302279d0001b30830cfaed780a4ac10e19863f8fd3793",
-          "sha256": "3d87c4be3dcf4025f85b87a0b5cf60fec154738a84c74806da4b113d3d462ea6",
-          "sha1": "578089af9d30381477202a5804bb192d23b0eb4d",
-          "md5": "de63c4dfb360e531d117fafea9944d0f"
+          "name": "mycustomplugin-1.2.6.jar",
+          "url": "mycustomplugin-1.2.6.jar",
+          "size": 17664,
+          "sha512": "c8e3805d9524891c5a86b38deb74aa5b535b959625d958be4c0c218211853ec5b0911169f053b5ceba1bfea81bb520ac8c55faacea6b8b458042f3fe162c5ce9",
+          "sha256": "a8b7828a83c7c7bc8047f53eb76828143e41ea8243bf8fbefd53cc9c332c9047",
+          "sha1": "82da33d888df8c23ca75e9b80e9f884f5dba2355",
+          "md5": "e7f5becfe2f326000dec4ed414960784"
         }
       ]
     }

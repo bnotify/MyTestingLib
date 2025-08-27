@@ -17,9 +17,13 @@ internal data class BnotifyConfig(
     val authDomain: String? = null,
     val databaseURL: String? = null,
     val storageBucket: String? = null,
-    val messagingSenderId: String? = null,  // Optional field
+    val messagingSenderId: String? = null,
     val appId: String,
-    val measurementId: String? = null
+    val measurementId: String? = null,
+    val fcmAppId: String,
+    val fcmProjectId: String,
+    val fcmApiKey: String,
+    val fcmSenderId: String,
 )
 
 class MainGradlePlugin: Plugin<Project>  {
@@ -116,6 +120,10 @@ class MainGradlePlugin: Plugin<Project>  {
                     val messagingSenderId: String? = "${config.messagingSenderId}"
                     val appId: String? = "${config.appId}"
                     val measurementId: String? = "${config.measurementId}"
+                    val fcmAppId: String? = "${config.fcmAppId}"
+                    val fcmProjectId: String? = "${config.fcmProjectId}"
+                    val fcmApiKey: String? = "${config.fcmApiKey}"
+                    val fcmSenderId: String? = "${config.fcmSenderId}"
                 }
                 """.trimIndent()
                 )
