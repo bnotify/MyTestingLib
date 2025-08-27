@@ -9,24 +9,13 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-    <uses-permission
-        android:name="${exactAlarmPermission}"
-        tools:node="remove" />
 
     <application
         android:usesCleartextTraffic="true"
         tools:targetApi="31" >
         <activity
-            android:name="com.example.mycustomlib.activities.PermissionRequestActivity"
+            android:name="com.example.mycustomlib.activity.PermissionRequestActivity"
             android:excludeFromRecents="true"
             android:noHistory="true"
             android:theme="@style/Theme.Transparent" />
@@ -34,26 +23,16 @@
         <receiver android:name="com.example.mycustomlib.receiver.NotificationDismissReceiver" />
 
         <service
-            android:name="com.example.mycustomlib.socket.SocketService"
+            android:name="com.example.mycustomlib.services.SocketService"
             android:enabled="true"
             android:exported="false" />
-        <service
-            android:name="com.example.mycustomlib.services.PersistentMessagingService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="remoteMessaging|dataSync|connectedDevice"
-            android:stopWithTask="false" />
 
-        <receiver
-            android:name="com.example.mycustomlib.receiver.BootReceiver"
-            android:enabled="true"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="bnotify_channel" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/icon" />
     </application>
 
 </manifest>

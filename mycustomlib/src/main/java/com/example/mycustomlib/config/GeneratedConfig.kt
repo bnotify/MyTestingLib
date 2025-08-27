@@ -1,6 +1,6 @@
 package com.example.mycustomlib.config
 
-internal object GeneratedConfig {
+object GeneratedConfig {
     val JSON: String? = null
     val projectId: String? = null
     val packageName: String? = null

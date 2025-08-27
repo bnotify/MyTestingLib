@@ -1,3 +1,4 @@
 com.example.mycustomlib
+drawable icon
 style Theme_Transparent
 xml bnotify_config

@@ -109,7 +109,7 @@ class MainGradlePlugin: Plugin<Project>  {
                     """
                 package com.example.mycustomlib.config
 
-                internal object GeneratedConfig {
+                object GeneratedConfig {
                     val JSON: String? = ${jsonContent.trim().quoteForKotlin()}
                     val projectId: String? = "${config.projectId}"
                     val packageName: String? = "${config.packageName}"

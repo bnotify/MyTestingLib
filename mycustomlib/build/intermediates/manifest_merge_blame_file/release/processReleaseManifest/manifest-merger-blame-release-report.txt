@@ -17,103 +17,52 @@
 11    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 11-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:9:5-79
 11-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:9:22-76
-12    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-12-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:10:5-77
-12-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:10:22-74
-13    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-13-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:11:5-81
-13-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:11:22-78
-14    <uses-permission android:name="android.permission.WAKE_LOCK" />
-14-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:12:5-68
-14-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:12:22-65
-15    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-15-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:13:5-95
-15-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:13:22-92
-16    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
-16-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:14:5-94
-16-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:14:22-91
-17    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-17-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:15:5-79
-17-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:15:22-76
-18    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
-18-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:16:5-87
-18-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:16:22-84
-19    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING" />
-19-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:17:5-94
-19-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:17:22-91
-20    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-20-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:18:5-79
-20-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:18:22-76
-21    <uses-permission
-21-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:19:5-83
-22        android:name="${exactAlarmPermission}"
-22-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:19:22-60
-23        tools:node="remove" />
-23-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:19:61-80
+12    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+12-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:10:5-79
+12-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:10:22-76
+13
+14    <application
+14-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:12:5-36:19
+15        android:usesCleartextTraffic="true"
+15-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:13:9-44
+16        tools:targetApi="31" >
+16-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:14:9-29
+17        <activity
+17-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:16:9-20:40
+18            android:name="com.example.mycustomlib.activity.PermissionRequestActivity"
+18-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:17:13-63
+19            android:excludeFromRecents="true"
+19-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:19:13-46
+20            android:noHistory="true"
+20-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:20:13-37
+21            android:theme="@style/Theme.Transparent" />
+21-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:18:13-53
+22
+23        <receiver android:name="com.example.mycustomlib.receiver.NotificationDismissReceiver" />
+23-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:22:9-74
+23-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:22:19-71
 24
-25    <application
-25-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:21:5-55:19
-26        android:usesCleartextTraffic="true"
-26-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:22:9-44
-27        tools:targetApi="31" >
-27-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:23:9-29
-28        <activity
-28-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:26:9-30:40
-29            android:name="com.example.mycustomlib.activities.PermissionRequestActivity"
-29-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:27:13-65
-30            android:excludeFromRecents="true"
-30-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:29:13-46
-31            android:noHistory="true"
-31-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:30:13-37
-32            android:theme="@style/Theme.Transparent" />
-32-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:28:13-53
-33
-34        <receiver android:name="com.example.mycustomlib.receiver.NotificationDismissReceiver" />
-34-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:32:9-74
-34-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:32:19-71
-35
-36        <service
-36-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:34:9-37:40
-37            android:name="com.example.mycustomlib.socket.SocketService"
-37-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:35:13-49
-38            android:enabled="true"
-38-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:36:13-35
-39            android:exported="false" />
-39-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:37:13-37
-40        <service
-40-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:38:9-43:44
-41            android:name="com.example.mycustomlib.services.PersistentMessagingService"
-41-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:39:13-64
-42            android:enabled="true"
-42-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:40:13-35
-43            android:exported="false"
-43-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:41:13-37
-44            android:foregroundServiceType="remoteMessaging|dataSync|connectedDevice"
-44-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:42:13-85
-45            android:stopWithTask="false" />
-45-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:43:13-41
-46
-47        <receiver
-47-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:45:9-54:20
-48            android:name="com.example.mycustomlib.receiver.BootReceiver"
-48-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:46:13-50
-49            android:enabled="true"
-49-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:47:13-35
-50            android:exported="true" >
-50-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:48:13-36
-51            <intent-filter>
-51-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:49:13-53:29
-52                <action android:name="android.intent.action.BOOT_COMPLETED" />
-52-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:50:17-79
-52-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:50:25-76
-53                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-53-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:51:17-82
-53-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:51:25-79
-54                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
-54-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:52:17-86
-54-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:52:25-83
-55            </intent-filter>
-56        </receiver>
-57    </application>
-58
-59</manifest>
+25        <service
+25-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:24:9-27:40
+26            android:name="com.example.mycustomlib.services.SocketService"
+26-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:25:13-51
+27            android:enabled="true"
+27-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:26:13-35
+28            android:exported="false" />
+28-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:27:13-37
+29
+30        <meta-data
+30-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:29:9-31:47
+31            android:name="com.google.firebase.messaging.default_notification_channel_id"
+31-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:30:13-89
+32            android:value="bnotify_channel" />
+32-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:31:13-44
+33        <meta-data
+33-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:33:9-35:49
+34            android:name="com.google.firebase.messaging.default_notification_icon"
+34-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:34:13-83
+35            android:resource="@drawable/icon" />
+35-->/Users/convexinteractive/Desktop/Hamza/Hamza/MyProjects/Android/example/MyTestingLib 3/mycustomlib/src/main/AndroidManifest.xml:35:13-46
+36    </application>
+37
+38</manifest>
