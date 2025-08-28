@@ -84,7 +84,7 @@ internal object NotificationsManager {
     }
 
 
-    private fun buildBaseNotification(
+    /*private fun buildBaseNotification(
         model: NotificationModel,
         context: Context,
         notificationId: Int
@@ -161,6 +161,78 @@ internal object NotificationsManager {
             setContentText(model.message)
             setContentIntent(clickPendingIntent)
             setDeleteIntent(dismissPendingIntent) // Set dismiss intent
+            setPriority(NotificationCompat.PRIORITY_HIGH)
+            setCategory(NotificationCompat.CATEGORY_MESSAGE)
+            setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            setShowWhen(true)
+        }
+    }*/
+
+    private fun buildBaseNotification(
+        model: NotificationModel,
+        context: Context,
+        notificationId: Int
+    ): NotificationCompat.Builder {
+
+        val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+        } else {
+            PendingIntent.FLAG_ONE_SHOT
+        }
+
+        // For the main click action (when notification is clicked)
+        val clickIntent = Intent(context, BNotifyApp.getActivityToOpenOnClick(context)).apply {
+            putExtra(NotifyConstants.From, "notification")
+            putExtra(NotifyConstants.SCREEN, model.screen)
+            putExtra(NotifyConstants.ACTION, NotifyConstants.ClickedEvent)
+            putExtra(NotifyConstants.NOTIFICATION_ID, model.notificationId ?: 0)
+            putExtra(NotifyConstants.TYPE, model.type ?: null)
+            putExtra(NotifyConstants.TOKEN, model.token)
+            putExtra(NotifyConstants.CLICK, true)
+            // Add these flags to handle the activity launch properly
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
+
+        val clickPendingIntent = PendingIntent.getActivity(
+            context,
+            // Use a unique request code for each notification
+            (model.notificationId?.toIntOrNull() ?: Random().nextInt()) + 1000,
+            clickIntent,
+            pendingIntentFlags
+        )
+
+        // For the dismiss action (when notification is dismissed)
+        val dismissIntent = Intent(context, NotificationDismissReceiver::class.java).apply {
+            putExtra(NotifyConstants.NOTIFICATION_ID, model.notificationId ?: 0)
+            putExtra(NotifyConstants.ACTION, NotifyConstants.DismissedEvent)
+            putExtra(NotifyConstants.SCREEN, model.screen)
+            putExtra(NotifyConstants.TYPE, model.type ?: null)
+            putExtra(NotifyConstants.CLICK, false)
+            putExtra(NotifyConstants.TOKEN, model.token)
+        }
+
+        val dismissPendingIntent = PendingIntent.getBroadcast(
+            context,
+            // Use a different unique request code
+            (model.notificationId?.toIntOrNull() ?: Random().nextInt()) + 2000,
+            dismissIntent,
+            pendingIntentFlags
+        )
+
+        val smallIconRes = context.applicationInfo.icon
+        val appIcon = context.packageManager.getApplicationIcon(context.packageName)
+        val bitmap = drawableToBitmap(appIcon)
+
+        return NotificationCompat.Builder(context, CHANNEL_ID).apply {
+            setAutoCancel(true)
+            setDefaults(Notification.DEFAULT_ALL)
+            setWhen(System.currentTimeMillis())
+            setSmallIcon(smallIconRes)
+            setLargeIcon(bitmap)
+            setContentTitle(model.title)
+            setContentText(model.message)
+            setContentIntent(clickPendingIntent)
+            setDeleteIntent(dismissPendingIntent)
             setPriority(NotificationCompat.PRIORITY_HIGH)
             setCategory(NotificationCompat.CATEGORY_MESSAGE)
             setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
