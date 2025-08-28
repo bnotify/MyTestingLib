@@ -23,6 +23,7 @@ import com.example.mycustomlib.BNotifyApp
 import com.example.mycustomlib.model.NotificationModel
 import com.example.mycustomlib.receiver.NotificationDismissReceiver
 import com.example.mycustomlib.socket.SocketManager
+import com.example.mycustomlib.utils.NotifyConstants
 import java.util.Random
 import kotlin.apply
 import kotlin.jvm.java
@@ -88,60 +89,6 @@ internal object NotificationsManager {
         context: Context,
         notificationId: Int
     ): NotificationCompat.Builder {
-//        val intent = Intent(context, MainActivity::class.java).apply {
-//            putExtra("from", "notification")
-//            putExtra("action", model.action)
-//            putExtra("type", model.type)
-//            putExtra("message", model.message)
-//            putExtra("screen", model.screen ?: "Home")
-//            putExtra("notification_id", model.notificationId)
-//            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-//        }
-//
-//        val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-//            Log.i("Notification_SocketIO","PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE ${PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE}")
-//        } else {
-//            PendingIntent.FLAG_UPDATE_CURRENT
-//            Log.i("Notification_SocketIO","FLAG_ONE_SHOT ${PendingIntent.FLAG_ONE_SHOT}")
-//        }
-
-//        val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
-//        } else {
-//            PendingIntent.FLAG_ONE_SHOT
-//        }
-
-
-
-//        val contentIntent = PendingIntent.getActivity(
-//            context,
-//            notificationId,
-//            intent,
-//            pendingIntentFlags
-//        )
-
-
-//        val contentIntent = PendingIntent.getActivity(
-//            context,
-//            notificationId,
-//            intent,
-//            pendingIntentFlags
-//        )
-
-//        val dismissIntent = Intent(context, NotificationDismissReceiver::class.java).apply {
-//            putExtra("notification_id", model.notificationId ?: 0)
-//            putExtra("action", "dismissed")
-//        }
-//
-//        val dismissPendingIntent = PendingIntent.getBroadcast(
-//            context,
-//            notificationId + 1, // Different request code
-//            dismissIntent,
-//            pendingIntentFlags
-//        )
-
-        //==========================================================================================
 
         val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -164,11 +111,13 @@ internal object NotificationsManager {
 //        }
         // For the main click action (when notification is clicked)
         val clickIntent = Intent(context, BNotifyApp.getActivityToOpenOnClick(context)).apply {
-            putExtra("from", "notification")
-            putExtra("action", "clicked") // Action when clicked
-            putExtra("notification_id", model.notificationId ?: 0)
-            putExtra("type", model.type ?: null)
-            putExtra("click", true)
+            putExtra(NotifyConstants.From, "notification")
+            putExtra(NotifyConstants.SCREEN, model.screen)
+            putExtra(NotifyConstants.ACTION, NotifyConstants.ClickedEvent) // Action when clicked
+            putExtra(NotifyConstants.NOTIFICATION_ID, model.notificationId ?: 0)
+            putExtra(NotifyConstants.TYPE, model.type ?: null)
+            putExtra(NotifyConstants.TOKEN, model.token)
+            putExtra(NotifyConstants.CLICK, true)
 //            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
 
@@ -181,10 +130,12 @@ internal object NotificationsManager {
 
 // For the dismiss action (when notification is dismissed)
         val dismissIntent = Intent(context, NotificationDismissReceiver::class.java).apply {
-            putExtra("notification_id", model.notificationId ?: 0)
-            putExtra("action", "dismissed") // Action when dismissed
-            putExtra("type", model.type ?: null)
-            putExtra("click", false)
+            putExtra(NotifyConstants.NOTIFICATION_ID, model.notificationId ?: 0)
+            putExtra(NotifyConstants.ACTION, NotifyConstants.DismissedEvent) // Action when dismissed
+            putExtra(NotifyConstants.SCREEN, model.screen)
+            putExtra(NotifyConstants.TYPE, model.type ?: null)
+            putExtra(NotifyConstants.CLICK, false)
+            putExtra(NotifyConstants.TOKEN, model.token)
         }
 
         val dismissPendingIntent = PendingIntent.getBroadcast(

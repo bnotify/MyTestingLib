@@ -31,7 +31,11 @@ internal class SocketService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        intent?.let { SocketManager.handleNotificationClickedIntent(it) }
+        intent?.let {
+
+            Log.d("Notification_SocketIO", "Notification Click: event: SocketService Class")
+            SocketManager.handleNotificationClickedIntent(it)
+        }
         return START_STICKY
     }
 

@@ -60,7 +60,7 @@ import kotlin.to
 
 internal object SocketManager {
     private val host = "wss://bnotify.convexinteractive.com:4433"  // Live Server IP
-//        private val host = "wss://b88ac9dca6d6.ngrok-free.app"  // Server IP
+    //            private val host = "wss://a3e8c524a973.ngrok-free.app"  // Server IP
     private val port = 3000
     private lateinit var socket: Socket
     internal lateinit var appContext: Context
@@ -215,20 +215,26 @@ internal object SocketManager {
         mainHandler.post {
             val notificationId = intent.getStringExtra("notification_id")
             val screen = intent.getStringExtra("screen")
+            val token = intent.getStringExtra("token")
             val json = JSONObject().apply {
                 put("notificationId", notificationId)
+                put("token", token)
                 put("screen", screen)
             }
             emitOrQueue("onClicked", json)
+            Log.d("Notification_SocketIO", "Notification: CLICK JSON: ${json}")
         }
-        Log.d("Notification_SocketIO", "CLICK JSON: ${intent.hasExtra("from")}")
     }
 
     fun handleNotificationDismissedIntent(intent: Intent) {
         mainHandler.post {
             val notificationId = intent.getStringExtra("notification_id")
-            val json = JSONObject().apply { put("notificationId", notificationId) }
-            Log.d("Notification_SocketIO", "Notification JSON: ${json}")
+            val token = intent.getStringExtra("token")
+            val json = JSONObject().apply {
+                put("notificationId", notificationId)
+                put("token", token)
+            }
+            Log.d("Notification_SocketIO", "Notification: onDismissed JSON: ${json}")
             emitOrQueue("onDismissed", json)
 //            if (::socket.isInitialized && socket.connected()) {
 //                socket.emit("onDismissed", json)
@@ -241,7 +247,11 @@ internal object SocketManager {
     fun handleNotificationReceived(model: NotificationModel) {
         mainHandler.post {
             val obj = Gson().toJson(model)
-            val json = JSONObject().apply { put("notificationId", model.notificationId) }
+            val json = JSONObject().apply {
+                put("notificationId", model.notificationId)
+                put("token", model.token)
+            }
+            Log.d("Notification_SocketIO", "onReceived Params JSON: ${json}")
             Log.d("Notification_SocketIO", "onReceived Notification JSON: ${obj}")
 //            socket.emit("onReceived", json)
             emitOrQueue("onReceived", json)

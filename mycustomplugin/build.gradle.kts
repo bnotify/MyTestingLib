@@ -6,7 +6,7 @@ plugins {
 }
 
 //val kotlinVersion = "2.0.21" // Define once for consistency
-val myPluginVersion = "1.2.9" // Define once for consistency
+val myPluginVersion = "1.3.0" // Define once for consistency
 
 repositories {
     google()

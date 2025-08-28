@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
 import com.example.mycustomlib.BNotifyApp
+import com.example.mycustomlib.config.GeneratedConfig
 import com.example.mycustomlib.model.NotificationModel
 import com.example.mycustomlib.notification.NotificationsManager
 import com.example.mycustomlib.services.BnotifyMessagingService
@@ -14,6 +15,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import org.json.JSONObject
 import kotlin.jvm.java
+
 
 internal class FcmFallbackService : FirebaseMessagingService() {
 
@@ -31,7 +33,12 @@ internal class FcmFallbackService : FirebaseMessagingService() {
 //                val serviceIntent = Intent(this, PersistentMessagingService::class.java)
                 val serviceIntent = Intent(applicationContext, SocketService::class.java)
                 val config_json = PrefsHelper.getConfig(applicationContext)
-                BNotifyApp.initialize(applicationContext,serviceIntent,BNotifyApp.getActivityToOpenOnClick(applicationContext), config_json.toString())
+//                BNotifyApp.initialize(applicationContext,serviceIntent,BNotifyApp.getActivityToOpenOnClick(applicationContext), config_json.toString())
+                BNotifyApp.initializeBase(
+                    applicationContext,
+                    BNotifyApp.getActivityToOpenOnClick(applicationContext),
+                    GeneratedConfig.JSON.toString()
+                )
 //                val myServiceIntent = Intent(this, MyMessagingService::class.java)
 
                 startService(serviceIntent)
