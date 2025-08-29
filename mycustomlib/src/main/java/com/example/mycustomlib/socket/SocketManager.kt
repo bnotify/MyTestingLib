@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
@@ -301,7 +302,9 @@ internal object SocketManager {
         val (versionCode, versionName) = getAppVersionInfo(appContext)
         val config_json = PrefsHelper.getConfig(appContext)
         var configs: BnotifyConfig = BNotifyApp.readBNotifyConfig(config_json.toString())!!
+        val isDebug = appContext.applicationContext.isDebugBuild()
 
+        Log.w("APP_VARIANT", "isDebug: ${isDebug}")
         return listOf(
             "ip=${ipFinderResponse.data?.ip_data?.ip_address}",
             "os=android ${Build.VERSION.RELEASE}",
@@ -325,6 +328,7 @@ internal object SocketManager {
             "projectId=${configs.projectId}",
             "appId=${configs.appId}",
             "fcmtoken=${token}",
+            "isDebug=${isDebug}",
         ).joinToString("&")
     }
 
@@ -635,5 +639,9 @@ internal object SocketManager {
     fun getDeviceCountryName(context: Context): String {
         val countryCode = getDeviceCountryCode(context)
         return Locale("", countryCode).displayCountry
+    }
+
+    fun Context.isDebugBuild(): Boolean {
+        return (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
     }
 }
